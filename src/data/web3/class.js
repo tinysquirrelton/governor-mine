@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 
 export default class W3C {
   constructor() {
-    this.web3 = null;
+    this.web3 = this.getWeb3();
     this.isConnected = false;
     this.address = null;
   }

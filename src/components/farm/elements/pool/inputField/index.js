@@ -12,7 +12,7 @@ export const InputField = ({
   <form onSubmit={(e) => e.preventDefault()} className="input-field">
     <div className="input-label">
       <span>{`${title}:`}</span>
-      {` ${current} ${unit}`}
+      {` ${current !== null ? current : 0} ${unit}`}
     </div>
     <div className="input-container">
       <button className="max-btn" onClick={onMax}>

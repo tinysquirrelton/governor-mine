@@ -86,7 +86,9 @@ export default class Pool extends Component {
             </div>
             <div className="claims">
               <div className="title">Available rewards:</div>
-              <div className="value">{`${token.rewards} GDAO`}</div>
+              <div className="value">{`${
+                token.rewards !== null ? token.rewards : 0
+              } GDAO`}</div>
               <div className="btn-container">
                 <button className="action-btn">Claim rewards</button>
                 <button className="action-btn">Claim & withdraw</button>
