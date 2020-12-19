@@ -60,23 +60,23 @@
     & .xs-nav-menu {
       display: none;
       position: absolute;
-      top: 54px;
-      right: 5%;
+      top: 75px;
+      left: 0;
+      width: 100%;
       pointer-events: none;
       &.expanded {
         display: block;
         pointer-events: auto;
         background-color: white;
-        border-radius: 0.5rem;
-        padding: 12px 24px;
         box-shadow: $shadow-soft;
         & .menu-item {
           display: block;
           color: black;
           font-size: 16px;
           font-weight: 400;
-          padding: 8px 0;
+          padding: 15px;
           text-decoration: none;
+          border-bottom: 1px solid rgb(236, 236, 236);
         }
         & .accordion-toggle {
           display: flex;
@@ -84,7 +84,8 @@
           color: black;
           font-size: 16px;
           font-weight: 400;
-          padding: 8px 0;
+          padding: 15px;
+          border-bottom: 1px solid rgb(236, 236, 236);
           & svg {
             height: 20px;
             width: 20px;
@@ -96,12 +97,12 @@
           display: none;
           &.expanded {
             display: block;
-            padding: 0px 0 0 16px;
+            padding: 15px 0 10px 35px;
             & a {
               display: block;
               text-decoration: none;
               color: black;
-              margin-bottom: 8px;
+              margin-bottom: 15px;
               &:last-child {
                 margin-bottom: 0;
               }
@@ -146,11 +147,11 @@
             display: flex;
             flex-wrap: wrap;
             position: absolute;
-            top: 35px;
+            top: 25px;
             right: 0;
             background-color: white;
             box-shadow: $shadow-soft;
-            border-radius: 0.5rem;
+            border-radius: 0 0 0.5rem 0.5rem;
             padding: 8px;
             & a {
               text-decoration: none;

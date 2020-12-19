@@ -1,11 +1,12 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
+import { HashLink } from "react-router-hash-link";
 import Logo from "../../assets/logos/governor-plain.png";
 import { Menu, X, ChevronDown, ChevronUp } from "react-feather";
 import { solutions, farm, resources, social } from "./items";
 import "./style.scss";
 
-class Header extends Component {
+export default class Header extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -18,12 +19,15 @@ class Header extends Component {
   }
 
   componentDidMount() {
-    window.addEventListener("resize", this.onResize.bind(this));
+    window.addEventListener("resize", this.onResize);
+    window.addEventListener("hashchange", this.hashHandler, false);
+
     this.onResize();
   }
 
   componentWillUnmount() {
     window.removeEventListener("resize", this.onResize());
+    window.removeEventListener("hashchange", this.onResize());
   }
 
   onResize = () => {
@@ -32,6 +36,14 @@ class Header extends Component {
       isMedium: window.innerWidth >= 768 && window.innerWidth < 992,
       isSmall: window.innerWidth < 768,
     });
+  };
+
+  hashHandler = () => {
+    const id = window.location.hash.slice(1);
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView();
+    }
   };
 
   onToggleDrawer = () => {
@@ -63,15 +75,21 @@ class Header extends Component {
           }`}
         >
           {content.map((c, index) => (
-            <Link
+            <a
               key={index}
-              to={c.to}
+              href={c.to}
               onClick={() => {
                 this.setState({ isExpanded: null, isItemOpen: null });
+                if (c.title === "Litepaper") {
+                  window.open(
+                    "https://governordao.org/papers/GDAO-Litepaper.pdf",
+                    "_blank"
+                  );
+                }
               }}
             >
               {c.title}
-            </Link>
+            </a>
           ))}
         </div>
       </div>
@@ -92,6 +110,34 @@ class Header extends Component {
     );
   };
 
+  getHash = (item) => {
+    return (
+      <HashLink
+        to={item.to}
+        className="menu-item"
+        onClick={() => {
+          this.setState({ isExpanded: null, isItemOpen: null });
+        }}
+      >
+        {item.title}
+      </HashLink>
+    );
+  };
+
+  getApp = (item) => {
+    return (
+      <a
+        href={item.to}
+        className="menu-item"
+        onClick={() => {
+          this.setState({ isExpanded: null, isItemOpen: null });
+        }}
+      >
+        {item.title}
+      </a>
+    );
+  };
+
   render() {
     // Small to medium navigation
     const XSNav = () => {
@@ -103,8 +149,8 @@ class Header extends Component {
           <div
             className={`xs-nav-menu ${this.state.isExpanded ? "expanded" : ""}`}
           >
-            {this.getAccordion("solutions", solutions)}
-            {this.getLink(farm)}
+            {this.getHash(solutions)}
+            {this.getApp(farm)}
             {this.getAccordion("resources", resources)}
             {this.getAccordion("social", social)}
           </div>
@@ -116,8 +162,8 @@ class Header extends Component {
       return (
         <>
           <div className="lg-nav-menu">
-            {this.getAccordion("solutions", solutions)}
-            {this.getLink(farm)}
+            {this.getHash(solutions)}
+            {this.getApp(farm)}
             {this.getAccordion("resources", resources)}
             {this.getAccordion("social", social)}
           </div>
@@ -130,7 +176,7 @@ class Header extends Component {
         <div className="header-content">
           <Link to="/" className="logo-container">
             <div className="logo-img">
-              <img src={Logo} />
+              <img src={Logo} alt="logo" />
             </div>
             <div className="logo-title">Governor</div>
           </Link>
@@ -140,5 +186,3 @@ class Header extends Component {
     );
   }
 }
-
-export default Header;

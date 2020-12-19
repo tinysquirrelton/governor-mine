@@ -5,7 +5,6 @@ import "./style.scss";
 
 const Row = (props) => {
   const { token, toggleExpand, isExpanded } = props;
-
   return (
     <>
       <div className="content" onClick={toggleExpand}>

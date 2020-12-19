@@ -24,10 +24,10 @@ export default class Token {
     }
   }
 
-  async getBalance(w3) {
-    if (w3.isAddressValid()) {
+  async getBalance(w3, address) {
+    if (w3.isAddressValid() && w3.isAddressValid(address)) {
       let b = await this.contract.methods.balanceOf(w3.address).call();
-      this.depositable = w3.getWeiToETH(b);
+      this.depositable = await w3.getWeiToETH(b);
     }
   }
 }

@@ -4,7 +4,7 @@ import "./style.scss";
 export const ConnectButton = ({ w3, updateState }) => {
   const action = () => {
     if (!w3.isConnected && !w3.isAddressValid()) {
-      w3.setConnect(updateState);
+      w3.setConnection(updateState);
     }
   };
 

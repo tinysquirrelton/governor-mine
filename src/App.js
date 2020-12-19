@@ -17,6 +17,7 @@ export default class App extends Component {
       isSmall: null,
       isMedium: null,
       isLarge: null,
+      isConnected: false,
     };
   }
 
@@ -25,9 +26,19 @@ export default class App extends Component {
     this.onResize();
 
     // Init Web3
-    await this.w3.setConnect(this.updateState);
-    this.w3.onAccountChange(this.updateState);
+    const isConnected = await this.w3.setConnection();
+    this.w3.onAccountChange(this.setChanged);
     this.w3.onNetworkChange();
+
+    // Init Token Contracts
+    const tasks = this.tokens.map(async (token) => {
+      await token.getContract(this.w3);
+      if (isConnected) {
+        await token.getBalance(this.w3, token.address);
+      }
+    });
+    await Promise.all(tasks);
+    this.setState({ isConnected: isConnected });
   }
 
   componentWillUnmount() {
@@ -49,8 +60,22 @@ export default class App extends Component {
     );
   };
 
-  updateState = () => {
-    this.setState({});
+  setChanged = async (changeType) => {
+    if (changeType === "DISCONNECTED") {
+      this.tokens.forEach((token) => {
+        token.depositable = null;
+        token.deposited = null;
+        token.earnings = null;
+        token.rewards = null;
+      });
+      this.setState({ isConnected: false });
+    } else if (changeType === "CHANGED_ACCOUNT") {
+      const tasks = this.tokens.map(async (token) => {
+        await token.getBalance(this.w3, token.address);
+      });
+      await Promise.all(tasks);
+      this.setState({ isConnected: true });
+    }
   };
 
   render() {

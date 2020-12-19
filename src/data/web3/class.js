@@ -37,7 +37,7 @@ export default class W3C {
 
   async getConnection(accounts) {
     await this.web3?.eth?.getChainId().then((x) => {
-      if (x == 1) {
+      if (x === 1) {
         this.isConnected = true;
         this.address = accounts[0].toString();
       } else {
@@ -48,24 +48,23 @@ export default class W3C {
     });
   }
 
-  async setConnect(updateState) {
+  async setConnection() {
     await this.getWeb3();
-    if (this.isAddressValid()) {
-      // Updates the state of the component this class is used in
-      updateState();
-    }
+    return this.isConnected;
   }
 
-  onAccountChange(updateState) {
+  onAccountChange(setChanged) {
     window?.ethereum?.on("accountsChanged", (accounts) => {
       if (accounts.length > 0 && this.address !== accounts[0].toString()) {
         this.isConnected = true;
         this.address = accounts[0].toString();
+        setChanged("CHANGED_ACCOUNT");
       } else {
+        this.web3 = null;
         this.isConnected = false;
         this.address = null;
+        setChanged("DISCONNECTED");
       }
-      updateState();
     });
   }
 
