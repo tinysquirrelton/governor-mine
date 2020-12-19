@@ -1,0 +1,43 @@
+@import "../../../../styles/breakpoints.scss";
+@import "../../../../styles/shadows.scss";
+
+.connect-container {
+  @include lg {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+  & .connect-button {
+    display: block;
+    width: 165px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+    margin: 40px auto 8px auto;
+    color: #3934a1;
+    border: none;
+    border-radius: 0.25rem;
+    padding: 10px 8px;
+    box-shadow: $shadow-soft-light;
+    cursor: pointer;
+    &:hover {
+      color: #999999;
+    }
+  }
+  & .disconnect-button {
+    display: block;
+    width: 165px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+    margin: 0 auto;
+    color: red;
+    border: none;
+    border-radius: 0.25rem;
+    padding: 10px 8px;
+    cursor: pointer;
+    &:hover {
+      color: #999999;
+    }
+  }
+}

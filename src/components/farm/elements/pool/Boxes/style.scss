@@ -1,5 +1,5 @@
-@import "../../../styles/breakpoints.scss";
-@import "../../../styles/shadows.scss";
+@import "../../../../../styles/breakpoints.scss";
+@import "../../../../../styles/shadows.scss";
 
 .farm-box-container {
   display: block;
@@ -89,12 +89,12 @@
         color: black;
         margin-top: 8px;
         & .title {
-          width: 150px;
+          width: 55%;
           font-weight: 300;
           font-size: 14px;
         }
         & .value {
-          width: 160px;
+          width: 40%;
           font-weight: 500;
           font-size: 14px;
         }

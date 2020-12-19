@@ -1,0 +1,38 @@
+@import "../../../../styles/breakpoints.scss";
+@import "../../../../styles/shadows.scss";
+
+.hide-zero-container {
+  display: flex;
+  align-items: center;
+  margin: 50px 0 15px 15px;
+  & input[type="checkbox"].hide-zero-box {
+    display: block;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    padding: 3px;
+    background-clip: content-box;
+    border: 1.5px solid white;
+    border-radius: 0.25rem;
+    background-color: transparent;
+    margin-left: 15px;
+    cursor: pointer;
+
+    &:checked {
+      background-color: white;
+    }
+    &:focus {
+      outline: none !important;
+    }
+  }
+  & .hide-zero-label {
+    display: block;
+    margin-left: 8px;
+    color: white;
+    font-size: 12px;
+    font-weight: 300;
+    letter-spacing: 0.5px;
+  }
+}

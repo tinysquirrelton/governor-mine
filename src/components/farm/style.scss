@@ -7,7 +7,6 @@
   z-index: 10;
   max-width: 1000px;
   margin: 0 auto;
-
   & .farm-title {
     display: block;
     position: relative;
@@ -24,46 +23,6 @@
         margin: 50px 0 25px 0;
       }
     }
-    & .connect-container {
-      @include lg {
-        position: absolute;
-        top: 0;
-        right: 0;
-      }
-      & .connect-button {
-        display: block;
-        width: 165px;
-        text-align: center;
-        font-size: 12px;
-        font-weight: 600;
-        margin: 40px auto 8px auto;
-        color: #3934a1;
-        border: none;
-        border-radius: 0.25rem;
-        padding: 10px 8px;
-        box-shadow: $shadow-soft-light;
-        cursor: pointer;
-        &:hover {
-          color: #999999;
-        }
-      }
-      & .disconnect-button {
-        display: block;
-        width: 165px;
-        text-align: center;
-        font-size: 12px;
-        font-weight: 600;
-        margin: 0 auto;
-        color: red;
-        border: none;
-        border-radius: 0.25rem;
-        padding: 10px 8px;
-        cursor: pointer;
-        &:hover {
-          color: #999999;
-        }
-      }
-    }
   }
   & .farm-subtitle {
     display: block;
@@ -74,41 +33,5 @@
     color: white;
     letter-spacing: 1px;
     margin: 10px 0;
-  }
-  & .hide-zero-container {
-    display: flex;
-    align-items: center;
-    margin: 50px 0 15px 15px;
-    & input[type="checkbox"].hide-zero-box {
-      display: block;
-      -webkit-appearance: none;
-      -moz-appearance: none;
-      appearance: none;
-      width: 18px;
-      height: 18px;
-      padding: 3px;
-      background-clip: content-box;
-      border: 1.5px solid white;
-      border-radius: 0.25rem;
-      background-color: transparent;
-      margin-left: 15px;
-      cursor: pointer;
-
-      &:checked {
-        background-color: white;
-      }
-      &:focus {
-        outline: none !important;
-      }
-    }
-    & .hide-zero-label {
-      display: block;
-      margin-left: 8px;
-      color: white;
-      font-size: 12px;
-      font-weight: 300;
-      letter-spacing: 0.5px;
-      cursor: pointer;
-    }
   }
 }
