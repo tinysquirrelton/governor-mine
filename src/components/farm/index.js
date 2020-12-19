@@ -12,7 +12,6 @@ export default class Farm extends Component {
     super(props);
     this.state = {
       hideZeroes: false,
-      showDropdown: false,
     };
   }
 
@@ -23,12 +22,6 @@ export default class Farm extends Component {
   toggleZeroes = () => {
     this.setState((prevState) => ({
       hideZeroes: !prevState.hideZeroes,
-    }));
-  };
-
-  toggleDropdown = () => {
-    this.setState((prevState) => ({
-      showDropdown: !prevState.showDropdown,
     }));
   };
 
@@ -46,12 +39,7 @@ export default class Farm extends Component {
         <div className="farm-container">
           <div className="farm-title">
             {this.props.isLarge && <div className="title-text">GDAO Farm</div>}
-            <ConnectButton
-              w3={this.props.w3}
-              showDropdown={this.state.showDropdown}
-              toggleDropdown={this.toggleDropdown}
-              updateState={this.updateState}
-            />
+            <ConnectButton w3={this.props.w3} updateState={this.updateState} />
             {!this.props.isLarge && <div className="title-text">GDAO Farm</div>}
           </div>
           <div className="farm-subtitle">{`TVL: ${tvl}`}</div>

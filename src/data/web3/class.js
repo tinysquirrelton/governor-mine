@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 
 export default class W3C {
   constructor() {
-    this.web3 = this.getWeb3();
+    this.web3 = null;
     this.isConnected = false;
     this.address = null;
   }
@@ -48,34 +48,24 @@ export default class W3C {
     });
   }
 
-  async setConnect(updateState = null) {
+  async setConnect(updateState) {
     await this.getWeb3();
     if (this.isAddressValid()) {
-      if (updateState !== null) {
-        // Updates the state of the component this class is used in
-        updateState();
-      }
-    }
-  }
-
-  setDisconnect(updateState = null) {
-    this.web3 = null;
-    this.isConnected = false;
-    this.address = null;
-
-    if (updateState !== null) {
       // Updates the state of the component this class is used in
       updateState();
     }
   }
 
-  onAccountChange() {
+  onAccountChange(updateState) {
     window?.ethereum?.on("accountsChanged", (accounts) => {
       if (accounts.length > 0 && this.address !== accounts[0].toString()) {
+        this.isConnected = true;
         this.address = accounts[0].toString();
       } else {
+        this.isConnected = false;
         this.address = null;
       }
+      updateState();
     });
   }
 

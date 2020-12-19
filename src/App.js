@@ -20,10 +20,13 @@ export default class App extends Component {
     };
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     window.addEventListener("resize", this.onResize.bind(this));
     this.onResize();
-    this.w3.onAccountChange();
+
+    // Init Web3
+    await this.w3.setConnect(this.updateState);
+    this.w3.onAccountChange(this.updateState);
     this.w3.onNetworkChange();
   }
 
@@ -44,6 +47,10 @@ export default class App extends Component {
       (pool) =>
         new Token(pool.address, pool.name, pool.text, pool.unit, pool.logo)
     );
+  };
+
+  updateState = () => {
+    this.setState({});
   };
 
   render() {

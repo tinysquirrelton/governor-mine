@@ -1,16 +1,9 @@
 import React from "react";
 import "./style.scss";
 
-export const ConnectButton = ({
-  w3,
-  showDropdown,
-  toggleDropdown,
-  updateState,
-}) => {
+export const ConnectButton = ({ w3, updateState }) => {
   const action = () => {
-    if (w3.isConnected && w3.isAddressValid()) {
-      toggleDropdown();
-    } else {
+    if (!w3.isConnected && !w3.isAddressValid()) {
       w3.setConnect(updateState);
     }
   };
@@ -22,14 +15,6 @@ export const ConnectButton = ({
           ? `Connected: ${w3.address.slice(0, 3)}...${w3.address.slice(-4)}`
           : "Connect wallet"}
       </button>
-      {showDropdown && (
-        <button
-          className="disconnect-button"
-          onClick={() => w3.setDisconnect(toggleDropdown)}
-        >
-          Disconnect
-        </button>
-      )}
     </div>
   );
 };
