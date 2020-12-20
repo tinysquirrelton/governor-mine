@@ -4,7 +4,14 @@ import { ToastContainer } from "react-toastify";
 import { X } from "react-feather";
 import W3C from "./data/web3/class";
 import Token from "./data/token/class";
-import { pools } from "./data/token/pools";
+import { pools } from "./utilities/constants/constants";
+import ERC20 from "./data/token/abi/ERC20.json";
+import {
+  wETHAddress,
+  USDCAddress,
+  farmAddress,
+  testnet,
+} from "./utilities/constants/constants";
 
 const Close = ({ closeToast }) => <X size={20} onClick={closeToast} />;
 
@@ -13,6 +20,9 @@ export default class App extends Component {
     super(props);
     this.w3 = new W3C();
     this.tokens = this.getTokens();
+    this.wethContract = null;
+    this.usdcContract = null;
+    this.farmContract = null;
     this.state = {
       isSmall: null,
       isMedium: null,
@@ -30,15 +40,28 @@ export default class App extends Component {
     this.w3.onAccountChange(this.setChanged);
     this.w3.onNetworkChange();
 
-    // Init Token Contracts
-    const tasks = this.tokens.map(async (token) => {
-      await token.getContract(this.w3);
-      if (isConnected) {
-        await token.getBalance(this.w3, token.address);
-      }
-    });
-    await Promise.all(tasks);
-    this.setState({ isConnected: isConnected });
+    // Get contracts to derive from
+    this.wethContract = this.getContract(this.w3, wETHAddress);
+    this.usdcContract = this.getContract(this.w3, USDCAddress);
+    // this.farmContract = this.getContract(this.w3, farmAddress); // unused atm..
+
+    // Init Token Contracts if Mainnet or Test-mode enabled
+    const chainId = await this.w3.web3.eth.getChainId();
+
+    if (chainId === 1 || testnet) {
+      const tasks = this.tokens.map(async (token) => {
+        await token.getContract(this.w3);
+        await token.getLPContract(this.w3);
+        await token.getPrice(this.w3, this.wethContract, this.usdcContract);
+        await token.getAPY(this.w3, this.wethContract, this.usdcContract);
+        await token.getTVL(this.w3);
+        if (isConnected) {
+          await token.getDepositable(this.w3, token.address);
+        }
+      });
+      await Promise.all(tasks);
+      this.setState({ isConnected: isConnected });
+    }
   }
 
   componentWillUnmount() {
@@ -56,8 +79,19 @@ export default class App extends Component {
   getTokens = () => {
     return pools.map(
       (pool) =>
-        new Token(pool.address, pool.name, pool.text, pool.unit, pool.logo)
+        new Token(
+          pool.address,
+          pool.lpAddress,
+          pool.name,
+          pool.text,
+          pool.unit,
+          pool.logo
+        )
     );
+  };
+
+  getContract = (w3, address) => {
+    return new w3.web3.eth.Contract(ERC20.abi, address);
   };
 
   setChanged = async (changeType) => {
@@ -71,7 +105,7 @@ export default class App extends Component {
       this.setState({ isConnected: false });
     } else if (changeType === "CHANGED_ACCOUNT") {
       const tasks = this.tokens.map(async (token) => {
-        await token.getBalance(this.w3, token.address);
+        await token.getDepositable(this.w3, token.address);
       });
       await Promise.all(tasks);
       this.setState({ isConnected: true });

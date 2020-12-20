@@ -13,7 +13,7 @@ const Row = (props) => {
         </div>
         <RowItem c={"row-name"} t={token.name} s={token.text} />
         <RowItem c={"row-apy"} t={"APY"} s={`${token.apy}%`} />
-        <RowItem c={"row-tvl"} t={"TVL"} s={token.tvl} />
+        <RowItem c={"row-tvl"} t={"TVL"} s={`$${token.tvl}`} />
         <RowItem
           c={"row-deposit"}
           t={"Available to deposit"}

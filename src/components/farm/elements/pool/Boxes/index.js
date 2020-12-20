@@ -23,7 +23,7 @@ const Box = (props) => {
       </div>
       <div className="lower">
         <Statistics t={"APY"} v={`${token.apy}%`} />
-        <Statistics t={"TVL"} v={token.tvl} />
+        <Statistics t={"TVL"} v={`$${token.tvl}`} />
       </div>
     </>
   );

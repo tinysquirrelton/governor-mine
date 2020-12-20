@@ -1,5 +1,10 @@
 import Web3 from "web3";
 import { toast } from "react-toastify";
+import {
+  testnet,
+  infuraProvider,
+  chainId,
+} from "../../utilities/constants/constants";
 
 export default class W3C {
   constructor() {
@@ -21,7 +26,7 @@ export default class W3C {
     }
     // Legacy dapp browsers...
     else if (window.web3) {
-      this.web3 = new Web3(Web3.currentProvider);
+      this.web3 = new Web3(new Web3.providers.HttpProvider(infuraProvider));
       try {
         let accounts = await this.web3.eth.getAccounts();
         await this.getConnection(accounts);
@@ -37,13 +42,17 @@ export default class W3C {
 
   async getConnection(accounts) {
     await this.web3?.eth?.getChainId().then((x) => {
-      if (x === 1) {
+      if (x === chainId) {
         this.isConnected = true;
         this.address = accounts[0].toString();
       } else {
         this.isConnected = false;
         this.address = null;
-        toast.error("You need to be on the Ethereum Mainnet");
+        toast.error(
+          testnet
+            ? "You need to be on the Ethereum Rinkeby Test Network"
+            : "You need to be on the Ethereum Mainnet"
+        );
       }
     });
   }
