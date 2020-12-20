@@ -5,6 +5,7 @@ export const InputField = ({
   current,
   unit,
   onMax,
+  onAction,
   value,
   onChange,
   buttonTitle,
@@ -22,6 +23,6 @@ export const InputField = ({
         <input type="number" value={value} step={0.001} onChange={onChange} />
       </div>
     </div>
-    <button className="action-btn">{`${buttonTitle} ${unit}`}</button>
+    <button className="action-btn" onClick={onAction}>{`${buttonTitle} ${unit}`}</button>
   </form>
 );
