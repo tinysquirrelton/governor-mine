@@ -51,11 +51,13 @@
   }
 
   & .lower {
-    display: flex;
-    align-items: center;
+    display: block;
     padding: 14px 34px;
     background-color: #4a8cc9;
     & .stats {
+      &:first-child {
+        margin-bottom: 4px;
+      }
       display: flex;
       align-items: center;
       font-size: 16px;
@@ -89,12 +91,15 @@
         color: black;
         margin-top: 8px;
         & .title {
-          width: 55%;
+          width: 47.5%;
           font-weight: 300;
-          font-size: 14px;
+          font-size: 12px;
+          @include sm {
+            font-size: 14px;
+          }
         }
         & .value {
-          width: 40%;
+          width: 52.5%;
           font-weight: 500;
           font-size: 14px;
         }
@@ -170,23 +175,19 @@
         font-weight: 600;
         color: #354e8e;
       }
-      & .btn-container {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        & .action-btn {
-          display: block;
-          margin: 8px 0 20px auto;
-          background-color: white;
-          border: solid 1px lightgray;
-          border-radius: 0.5rem;
-          box-shadow: $shadow-tiny;
-          color: #354e8e;
-          font-size: 14px;
-          font-weight: 600;
-          padding: 10px 0;
-          width: 48.5%;
-        }
+
+      & .claim-btn {
+        display: block;
+        margin: 8px 0 20px auto;
+        background-color: white;
+        border: solid 1px lightgray;
+        border-radius: 0.5rem;
+        box-shadow: $shadow-tiny;
+        color: #354e8e;
+        font-size: 14px;
+        font-weight: 600;
+        padding: 10px 0;
+        width: 100%;
       }
     }
   }

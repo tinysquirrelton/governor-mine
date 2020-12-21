@@ -52,8 +52,8 @@ export default class W3C {
         this.address = null;
         toast.error(
           testnet
-            ? "You need to be on the Ethereum Rinkeby Test Network"
-            : "You need to be on the Ethereum Mainnet"
+            ? "You need to be on the Ethereum Rinkeby Test Network."
+            : "You need to be on the Ethereum Mainnet."
         );
       }
     });

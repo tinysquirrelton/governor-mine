@@ -6,6 +6,7 @@
   position: relative;
   border: 1px solid #4a8cc9;
   border-radius: 0.75rem;
+  background-color: white;
   margin-bottom: 25px;
   overflow: hidden;
   &.expanded {
@@ -178,6 +179,10 @@
           font-weight: 600;
           padding: 10px 0;
           width: 150px;
+          &:hover {
+            color: white;
+            background-color: #4a8cc9;
+          }
         }
       }
       & .input-field {
@@ -206,25 +211,22 @@
         color: #354e8e;
         margin: 6px 0 18px 0;
       }
-      & .btn-container {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        max-width: 38%;
-        min-width: 372px;
-        margin: 0 auto;
-        & .action-btn {
-          display: block;
-          margin: 8px 0 20px 0;
-          background-color: white;
-          border: solid 1px lightgray;
-          border-radius: 0.5rem;
-          box-shadow: $shadow-tiny;
-          color: #354e8e;
-          font-size: 14px;
-          font-weight: 600;
-          padding: 10px 0;
-          width: 150px;
+      & .claim-btn {
+        display: block;
+        margin: 8px auto 20px auto;
+        background-color: white;
+        border: solid 1px lightgray;
+        border-radius: 0.5rem;
+        box-shadow: $shadow-tiny;
+        color: #354e8e;
+        font-size: 14px;
+        font-weight: 600;
+        padding: 10px 0;
+        width: 150px;
+        cursor: pointer;
+        &:hover {
+          color: white;
+          background-color: #4a8cc9;
         }
       }
     }
