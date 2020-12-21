@@ -36,8 +36,8 @@ export default class Farm extends Component {
       return this.props.tokens.map((token, index) => {
         if (
           this.state.hideZeroes === true &&
-          token.depositable === null &&
-          token.deposited === null
+          (token.depositable === null || token.depositable === 0) &&
+          (token.deposited === null || token.deposited === 0)
         ) {
           return null;
         } else {

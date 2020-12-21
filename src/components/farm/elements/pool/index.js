@@ -4,6 +4,7 @@ import Box from "./Boxes";
 import Row from "./Rows";
 import { InputField } from "./inputField";
 import { Statistics } from "./Statistics";
+import { roundValue } from "../../../../utilities/helpers";
 
 export default class Pool extends Component {
   constructor(props) {
@@ -126,14 +127,17 @@ export default class Pool extends Component {
               <div className="title">Statistics:</div>
               <Statistics
                 t={`${token.unit} Deposited`}
-                v={`${token.deposited} ${token.unit}`}
+                v={`${roundValue(token.deposited)} ${token.unit}`}
               />
-              <Statistics t={"Claimable Rewards"} v={`${token.rewards} GDAO`} />
+              <Statistics
+                t={"Claimable Rewards"}
+                v={`${roundValue(token.rewards)} GDAO`}
+              />
             </div>
             <div className="fields">
               <InputField
                 title={"Your wallet"}
-                current={token.depositable}
+                current={roundValue(token.depositable)}
                 unit={token.unit}
                 onMax={this.onMaxDeposit}
                 onAction={this.onDepositExecute}
@@ -145,7 +149,7 @@ export default class Pool extends Component {
               />
               <InputField
                 title={"Staked in contract"}
-                current={token.deposited}
+                current={roundValue(token.deposited)}
                 unit={token.unit}
                 onMax={this.onMaxWithdraw}
                 onAction={this.onWithdrawExcecute}
@@ -159,7 +163,7 @@ export default class Pool extends Component {
             <div className="claims">
               <div className="title">Available rewards:</div>
               <div className="value">{`${
-                token.rewards !== null ? token.rewards : "-"
+                token.rewards !== null ? roundValue(token.rewards) : "-"
               } GDAO`}</div>
               <button
                 className="claim-btn"

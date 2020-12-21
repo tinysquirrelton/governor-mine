@@ -1,11 +1,11 @@
 import React from "react";
 import { Expander } from "../Expander";
 import { Statistics } from "../Statistics";
+import { roundValue } from "../../../../../utilities/helpers";
 import "./style.scss";
 
 const Box = (props) => {
   const { token, toggleExpand, isExpanded } = props;
- 
 
   return (
     <>
@@ -22,8 +22,8 @@ const Box = (props) => {
         </div>
       </div>
       <div className="lower">
-        <Statistics t={"APY"} v={`${token.apy}%`} />
-        <Statistics t={"TVL"} v={`$${token.tvl}`} />
+        <Statistics t={"APY"} v={`${roundValue(token.apy)}%`} />
+        <Statistics t={"TVL"} v={`$${roundValue(token.tvl)}`} />
       </div>
     </>
   );

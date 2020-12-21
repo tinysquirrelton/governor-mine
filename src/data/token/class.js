@@ -107,8 +107,7 @@ export default class Token {
 
       let n = gdaoPrice * xBy;
       let d = this.price * bB;
-      let apy = n / d;
-      this.apy = Math.round((apy + Number.EPSILON) * 100) / 100;
+      this.apy = n / d;
     }
   }
 
@@ -150,24 +149,21 @@ export default class Token {
       } else {
         bB = await w3.getWeiToETH(b);
       }
-      let tvl = bB * this.price;
-      this.tvl = Math.round((tvl + Number.EPSILON) * 100) / 100;
+      this.tvl = bB * this.price;
     }
   }
 
   async getDepositable(w3) {
     if (w3.isAddressValid() && w3.isAddressValid(this.address)) {
       let b = await this.contract.methods.balanceOf(w3.address).call();
-      let depositable = await w3.getWeiToETH(b);
-      this.depositable = Math.round((depositable + Number.EPSILON) * 100) / 100;
+      this.depositable = await w3.getWeiToETH(b);
     }
   }
 
   async getDeposited(w3, farmContract) {
     if (w3.isAddressValid()) {
       let b = await farmContract.methods.userInfo(this.pid, w3.address).call();
-      let deposited = await w3.getWeiToETH(b.amount);
-      this.deposited = Math.round((deposited + Number.EPSILON) * 100) / 100;
+      this.deposited = await w3.getWeiToETH(b.amount);
     }
   }
 
@@ -176,8 +172,7 @@ export default class Token {
       let b = await farmContract.methods
         .pendingGDAO(this.pid, w3.address)
         .call();
-      let rewards = await w3.getWeiToETH(b);
-      this.rewards = Math.round((rewards + Number.EPSILON) * 100) / 100;
+      this.rewards = await w3.getWeiToETH(b);
     }
   }
 }

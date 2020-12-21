@@ -14,3 +14,11 @@ window.mobilecheck = function () {
   })(navigator.userAgent || navigator.vendor || window.opera);
   return check;
 };
+
+export const roundValue = (v) => {
+  try {
+    return Math.round((v + Number.EPSILON) * 100) / 100;
+  } catch (err) {
+    return v;
+  }
+};
