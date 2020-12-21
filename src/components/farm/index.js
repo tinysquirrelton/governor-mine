@@ -4,7 +4,6 @@ import { HideZeroes } from "./elements/hideZeroes";
 import Pool from "./elements/pool";
 import "./style.scss";
 
-const tvl = "$130,000,000";
 const supply = "10,000,000";
 
 export default class Farm extends Component {
@@ -25,7 +24,14 @@ export default class Farm extends Component {
     }));
   };
 
+  getTVL = () => {
+    let tvl = 0;
+    this.props.tokens.forEach((token) => (tvl += token.tvl));
+    return tvl;
+  };
+
   render() {
+    const tvl = this.getTVL();
     const Pools = () => {
       return this.props.tokens.map((token, index) => {
         if (
@@ -48,7 +54,7 @@ export default class Farm extends Component {
             <ConnectButton w3={this.props.w3} />
             {!this.props.isLarge && <div className="title-text">GDAO Farm</div>}
           </div>
-          <div className="farm-subtitle">{`TVL: ${tvl}`}</div>
+          <div className="farm-subtitle">{`TVL: $${tvl}`}</div>
           <div className="farm-subtitle">{`Circulating Supply: ${supply}`}</div>
           <HideZeroes
             hideZeroes={this.state.hideZeroes}
