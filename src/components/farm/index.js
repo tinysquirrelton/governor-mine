@@ -27,11 +27,17 @@ export default class Farm extends Component {
 
   render() {
     const Pools = () => {
-      return this.props.tokens.map((token, index) =>
-        this.state.hideZeroes && token.deposited === null ? null : (
-          <Pool key={index} token={token} {...this.props} />
-        )
-      );
+      return this.props.tokens.map((token, index) => {
+        if (
+          this.state.hideZeroes === true &&
+          token.depositable === null &&
+          token.deposited === null
+        ) {
+          return null;
+        } else {
+          return <Pool key={index} token={token} {...this.props} />;
+        }
+      });
     };
 
     return (

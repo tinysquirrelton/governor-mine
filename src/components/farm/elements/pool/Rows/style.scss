@@ -183,6 +183,12 @@
             color: white;
             background-color: #4a8cc9;
           }
+          &:disabled,
+          &[disabled] {
+            border-color: #cccccc;
+            color: #aaaaaa;
+            background-color: #dddddd;
+          }
         }
       }
       & .input-field {
@@ -227,6 +233,12 @@
         &:hover {
           color: white;
           background-color: #4a8cc9;
+        }
+        &:disabled,
+        &[disabled] {
+          border-color: #cccccc;
+          color: #aaaaaa;
+          background-color: #dddddd;
         }
       }
     }

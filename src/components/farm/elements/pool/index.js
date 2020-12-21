@@ -116,7 +116,7 @@ export default class Pool extends Component {
   };
 
   render() {
-    const { w3, token, isSmall } = this.props;
+    const { token, isSmall, isConnected } = this.props;
     const { isExpanded, toDeposit, toWithdraw } = this.state;
 
     return (
@@ -127,15 +127,15 @@ export default class Pool extends Component {
       >
         {isSmall ? (
           <Box
-            token={this.props.token}
+            token={token}
             toggleExpand={this.toggleExpand}
-            isExpanded={this.state.isExpanded}
+            isExpanded={isExpanded}
           />
         ) : (
           <Row
-            token={this.props.token}
+            token={token}
             toggleExpand={this.toggleExpand}
-            isExpanded={this.state.isExpanded}
+            isExpanded={isExpanded}
           />
         )}
         {isExpanded && (
@@ -158,6 +158,7 @@ export default class Pool extends Component {
                 value={toDeposit}
                 onChange={(e) => this.onDepositChange(e)}
                 buttonTitle={"Deposit"}
+                isConnected={isConnected}
               />
               <InputField
                 title={"Staked in contract"}
@@ -168,6 +169,7 @@ export default class Pool extends Component {
                 value={toWithdraw}
                 onChange={(e) => this.onWithdrawChange(e)}
                 buttonTitle={"Withdraw"}
+                isConnected={isConnected}
               />
             </div>
             <div className="claims">
@@ -175,7 +177,11 @@ export default class Pool extends Component {
               <div className="value">{`${
                 token.rewards !== null ? token.rewards : "-"
               } GDAO`}</div>
-              <button className="claim-btn" onClick={this.onClaim}>
+              <button
+                className="claim-btn"
+                onClick={this.onClaim}
+                disabled={!isConnected}
+              >
                 Claim Rewards
               </button>
             </div>

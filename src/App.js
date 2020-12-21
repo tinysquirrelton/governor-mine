@@ -34,6 +34,7 @@ export default class App extends Component {
   }
 
   async componentDidMount() {
+    let chainId;
     window.addEventListener("resize", this.onResize.bind(this));
     this.onResize();
 
@@ -43,21 +44,25 @@ export default class App extends Component {
     this.w3.onNetworkChange();
 
     // Get contracts to derive from
-    this.wethContract = this.getContract(this.w3, wETHAddress);
-    this.usdcContract = this.getContract(this.w3, USDCAddress);
-    this.farmContract = this.getContractFarm(this.w3, farmAddress);
+    if (this.w3.web3 !== null) {
+      this.wethContract = this.getContract(this.w3, wETHAddress);
+      this.usdcContract = this.getContract(this.w3, USDCAddress);
+      this.farmContract = this.getContractFarm(this.w3, farmAddress);
+      // Init Token Contracts if Mainnet or Test-mode enabled
+      chainId = await this.w3.web3.eth.getChainId();
+    }
 
-    // Init Token Contracts if Mainnet or Test-mode enabled
-    const chainId = await this.w3.web3.eth.getChainId();
-
-    if (chainId === 1 || testnet) {
+    if (
+      chainId === 1 ||
+      (testnet && this.wethContract !== null && this.usdcContract !== null)
+    ) {
       const tasks = this.tokens.map(async (token) => {
         await token.getContract(this.w3);
         await token.getLPContract(this.w3);
         await token.getPrice(this.w3, this.wethContract, this.usdcContract);
         await token.getAPY(this.w3, this.wethContract, this.usdcContract);
         await token.getTVL(this.w3);
-        if (isConnected) {
+        if (isConnected && this.farmContract !== null) {
           await token.getDepositable(this.w3);
           await token.getDeposited(this.w3, this.farmContract);
           await token.getPendingGDAO(this.w3, this.farmContract);
@@ -137,6 +142,7 @@ export default class App extends Component {
           w3={this.w3}
           tokens={this.tokens}
           farmContract={this.farmContract}
+          isConnected={this.state.isConnected}
           isSmall={this.state.isSmall}
           isMedium={this.state.isMedium}
           isLarge={this.state.isLarge}

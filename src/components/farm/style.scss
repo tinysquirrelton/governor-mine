@@ -39,3 +39,9 @@
 button {
   cursor: pointer;
 }
+
+button:disabled,
+button[disabled] {
+  pointer-events: none;
+  cursor: default;
+}

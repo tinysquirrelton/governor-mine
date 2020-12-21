@@ -158,6 +158,12 @@
         font-weight: 600;
         padding: 10px 0;
         width: 100%;
+        &:disabled,
+        &[disabled] {
+          border-color: #cccccc;
+          color: #aaaaaa;
+          background-color: #dddddd;
+        }
       }
     }
     & .claims {
@@ -188,6 +194,12 @@
         font-weight: 600;
         padding: 10px 0;
         width: 100%;
+        &:disabled,
+        &[disabled] {
+          border-color: #cccccc;
+          color: #aaaaaa;
+          background-color: #dddddd;
+        }
       }
     }
   }
