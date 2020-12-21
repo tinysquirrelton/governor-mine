@@ -112,7 +112,7 @@ export default class Header extends Component {
 
   getHash = (item) => {
     return (
-      <HashLink
+      <a
         to={item.to}
         className="menu-item"
         onClick={() => {
@@ -120,7 +120,7 @@ export default class Header extends Component {
         }}
       >
         {item.title}
-      </HashLink>
+      </a>
     );
   };
 
