@@ -60,6 +60,7 @@ export default class App extends Component {
         if (isConnected) {
           await token.getDepositable(this.w3);
           await token.getDeposited(this.w3, this.farmContract);
+          await token.getPendingGDAO(this.w3, this.farmContract);
         }
       });
       await Promise.all(tasks);
@@ -107,7 +108,6 @@ export default class App extends Component {
       this.tokens.forEach((token) => {
         token.depositable = null;
         token.deposited = null;
-        token.earnings = null;
         token.rewards = null;
       });
       this.setState({ isConnected: false });
@@ -115,6 +115,7 @@ export default class App extends Component {
       const tasks = this.tokens.map(async (token) => {
         await token.getDepositable(this.w3);
         await token.getDeposited(this.w3, this.farmContract);
+        await token.getPendingGDAO(this.w3, this.farmContract);
       });
       await Promise.all(tasks);
       this.setState({ isConnected: true });

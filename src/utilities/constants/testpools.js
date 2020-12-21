@@ -44,15 +44,15 @@ export const testpools = [
   //     lpAddress: "0xB4e16d0168e52d35CaCD2c6185b44281Ec28C9Dc",
   //     pid: ''
   //   },
-  {
-    logo: UNI,
-    name: "UNI",
-    text: "Uniswap",
-    unit: "UNI",
-    address: "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
-    lpAddress: "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
-    pid: "7",
-  },
+  // {
+  //   logo: UNI,
+  //   name: "UNI",
+  //   text: "Uniswap",
+  //   unit: "UNI",
+  //   address: "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
+  //   lpAddress: "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
+  //   pid: "7",
+  // },
   //   {
   //     logo: YFI,
   //     name: "YFI",

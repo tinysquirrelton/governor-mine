@@ -1,3 +1,5 @@
+import BigNumber from "bignumber.js/bignumber";
+
 import ERC20 from "./abi/ERC20.json";
 import {
   testnet,
@@ -25,7 +27,6 @@ export default class Token {
     // Values below will be nullified on account change/disconnect
     this.depositable = null;
     this.deposited = null;
-    this.earnings = null;
     this.rewards = null;
   }
 
@@ -58,6 +59,9 @@ export default class Token {
         p = wB2x / tSB; // Price in ETH
       } else {
         let x = await this.contract.methods.balanceOf(this.lpAddress).call();
+        if (["USDC", "WBTC"].includes(this.name)) {
+          x = BigNumber(x).toNumber();
+        }
         if (this.name === "USDC") {
           xB = x / 10 ** 6;
         } else if (this.name === "WBTC") {
@@ -73,7 +77,9 @@ export default class Token {
       } else {
         let i = await wethContract.methods.balanceOf(USDCWETHAddress).call();
         let iB = await w3.getWeiToETH(i);
-        let j = await usdcContract.methods.balanceOf(USDCWETHAddress).call();
+        let j = BigNumber(
+          await usdcContract.methods.balanceOf(USDCWETHAddress).call()
+        ).toNumber();
         let jB = j / 10 ** 6;
         let ijP = jB / iB; // Price of WETH in USDC
         this.price = p * ijP; // Price of Token in USDC
@@ -88,6 +94,9 @@ export default class Token {
       const xBy = this.name === "GDAO / ETH" ? 400000 : 100000;
       let b = await this.contract.methods.balanceOf(farmAddress).call();
 
+      if (("USDC", "WBTC".includes(this.name))) {
+        b = BigNumber(b).toNumber();
+      }
       if (this.name === "USDC") {
         bB = b / 10 ** 6;
       } else if (this.name === "WBTC") {
@@ -117,10 +126,13 @@ export default class Token {
     } else {
       let i = await wethContract.methods.balanceOf(USDCWETHAddress).call();
       let iB = await w3.getWeiToETH(i);
-      let j = await usdcContract.methods.balanceOf(USDCWETHAddress).call();
+      let j = BigNumber(
+        await usdcContract.methods.balanceOf(USDCWETHAddress).call()
+      ).toNumber();
       let jB = j / 10 ** 6;
       let ijP = jB / iB; // Price of WETH in USDC
-      return p * ijP; // Price of Token in USDC
+      let price = p * ijP; // Price of Token in USDC
+      return price;
     }
   }
 
@@ -128,6 +140,9 @@ export default class Token {
     if (w3.isAddressValid(this.address)) {
       let bB;
       let b = await this.contract.methods.balanceOf(farmAddress).call();
+      if (("USDC", "WBTC".includes(this.name))) {
+        b = BigNumber(b).toNumber();
+      }
       if (this.name === "USDC") {
         bB = b / 10 ** 6;
       } else if (this.name === "WBTC") {
@@ -143,14 +158,26 @@ export default class Token {
   async getDepositable(w3) {
     if (w3.isAddressValid() && w3.isAddressValid(this.address)) {
       let b = await this.contract.methods.balanceOf(w3.address).call();
-      this.depositable = await w3.getWeiToETH(b);
+      let depositable = await w3.getWeiToETH(b);
+      this.depositable = Math.round((depositable + Number.EPSILON) * 100) / 100;
     }
   }
 
-  async getDeposited(w3, contract) {
+  async getDeposited(w3, farmContract) {
     if (w3.isAddressValid()) {
-      let b = await contract.methods.userInfo(this.pid, w3.address).call();
-      this.deposited = await w3.getWeiToETH(b.amount);
+      let b = await farmContract.methods.userInfo(this.pid, w3.address).call();
+      let deposited = await w3.getWeiToETH(b.amount);
+      this.deposited = Math.round((deposited + Number.EPSILON) * 100) / 100;
+    }
+  }
+
+  async getPendingGDAO(w3, farmContract) {
+    if (w3.isAddressValid()) {
+      let b = await farmContract.methods
+        .pendingGDAO(this.pid, w3.address)
+        .call();
+      let rewards = await w3.getWeiToETH(b);
+      this.rewards = Math.round((rewards + Number.EPSILON) * 100) / 100;
     }
   }
 }

@@ -1,5 +1,7 @@
 import Web3 from "web3";
 import { toast } from "react-toastify";
+import BigNumber from "bignumber.js/bignumber";
+
 import {
   testnet,
   infuraProvider,
@@ -90,6 +92,6 @@ export default class W3C {
   }
 
   getWeiToETH(balance) {
-    return this.web3.utils.fromWei(balance, "ether").substring(0, 10);
+    return BigNumber(this.web3.utils.fromWei(balance, "ether")).toNumber();
   }
 }
