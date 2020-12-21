@@ -15,7 +15,7 @@ export const InputField = ({
   <form onSubmit={(e) => e.preventDefault()} className="input-field">
     <div className="input-label">
       <span>{`${title}:`}</span>
-      {` ${current !== null ? current : "-"} ${unit}`}
+      {` ${current !== null && isConnected ? current : "-"} ${unit}`}
     </div>
     <div className="input-container">
       <button className="max-btn" onClick={onMax} disabled={!isConnected}>
