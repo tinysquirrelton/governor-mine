@@ -8,13 +8,14 @@ import {
 } from "../../utilities/constants/constants";
 
 export default class Token {
-  constructor(address, lpAddress, name, text, unit, logo) {
+  constructor(address, lpAddress, name, text, unit, logo, id) {
     this.address = address;
     this.lpAddress = lpAddress;
     this.name = name;
     this.text = text;
     this.unit = unit;
     this.logo = logo;
+    this.poolID = id;
     // Values below will be fetched
     this.contract = null;
     this.lpContract = null;
@@ -147,6 +148,13 @@ export default class Token {
     if (w3.isAddressValid() && w3.isAddressValid(address)) {
       let b = await this.contract.methods.balanceOf(w3.address).call();
       this.depositable = await w3.getWeiToETH(b);
+    }
+  }
+
+  async getDeposited(w3, address, contract, poolID) {
+    if (w3.isAddressValid() && w3.isAddressValid(address)) { 
+      let b = await contract.methods.userInfo(poolID, address).call();
+      this.deposited = await w3.getWeiToETH(b.amount);
     }
   }
 }

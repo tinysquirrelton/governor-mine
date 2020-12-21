@@ -6,6 +6,8 @@ import W3C from "./data/web3/class";
 import Token from "./data/token/class";
 import { pools } from "./utilities/constants/constants";
 import ERC20 from "./data/token/abi/ERC20.json";
+import FARM from "./data/token/abi/farmContract.json";
+
 import {
   wETHAddress,
   USDCAddress,
@@ -43,7 +45,7 @@ export default class App extends Component {
     // Get contracts to derive from
     this.wethContract = this.getContract(this.w3, wETHAddress);
     this.usdcContract = this.getContract(this.w3, USDCAddress);
-    // this.farmContract = this.getContract(this.w3, farmAddress); // unused atm..
+    this.farmContract = this.getContractFarm(this.w3, farmAddress);
 
     // Init Token Contracts if Mainnet or Test-mode enabled
     const chainId = await this.w3.web3.eth.getChainId();
@@ -57,11 +59,13 @@ export default class App extends Component {
         await token.getTVL(this.w3);
         if (isConnected) {
           await token.getDepositable(this.w3, token.address);
+          await token.getDeposited(this.w3, this.w3.address, this.farmContract, token.poolID);
         }
       });
       await Promise.all(tasks);
       this.setState({ isConnected: isConnected });
     }
+
   }
 
   componentWillUnmount() {
@@ -85,13 +89,18 @@ export default class App extends Component {
           pool.name,
           pool.text,
           pool.unit,
-          pool.logo
+          pool.logo,
+          pool.poolID,
         )
     );
   };
 
   getContract = (w3, address) => {
     return new w3.web3.eth.Contract(ERC20.abi, address);
+  };
+
+  getContractFarm = (w3, address) => {
+    return new w3.web3.eth.Contract(FARM.abi, address);
   };
 
   setChanged = async (changeType) => {
@@ -126,6 +135,7 @@ export default class App extends Component {
         <Routes
           w3={this.w3}
           tokens={this.tokens}
+          farmContract={this.farmContract}
           isSmall={this.state.isSmall}
           isMedium={this.state.isMedium}
           isLarge={this.state.isLarge}
