@@ -1,6 +1,6 @@
 import React from "react";
 
-export const RowItem = ({ c, t, s }) => (
+export const RowItem = ({ c, t, s, isConnected }) => (
   <div className={c}>
     <div className="title">{t}</div>
     <div className="subtitle">
@@ -9,7 +9,8 @@ export const RowItem = ({ c, t, s }) => (
       s === "$null" ||
       s === "null%" ||
       s === "$Infinity" ||
-      s === "Infinity%"
+      s === "Infinity%" ||
+      !isConnected
         ? "-"
         : s}
     </div>

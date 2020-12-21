@@ -5,7 +5,7 @@ import { roundValue } from "../../../../../utilities/helpers";
 import "./style.scss";
 
 const Box = (props) => {
-  const { token, toggleExpand, isExpanded } = props;
+  const { token, toggleExpand, isExpanded, isConnected } = props;
 
   return (
     <>
@@ -22,8 +22,16 @@ const Box = (props) => {
         </div>
       </div>
       <div className="lower">
-        <Statistics t={"APY"} v={`${roundValue(token.apy)}%`} />
-        <Statistics t={"TVL"} v={`$${roundValue(token.tvl)}`} />
+        <Statistics
+          t={"APY"}
+          v={`${roundValue(token.apy)}%`}
+          isConnected={isConnected}
+        />
+        <Statistics
+          t={"TVL"}
+          v={`$${roundValue(token.tvl)}`}
+          isConnected={isConnected}
+        />
       </div>
     </>
   );

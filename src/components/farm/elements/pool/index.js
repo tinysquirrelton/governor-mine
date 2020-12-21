@@ -113,12 +113,14 @@ export default class Pool extends Component {
             token={token}
             toggleExpand={this.toggleExpand}
             isExpanded={isExpanded}
+            isConnected={isConnected}
           />
         ) : (
           <Row
             token={token}
             toggleExpand={this.toggleExpand}
             isExpanded={isExpanded}
+            isConnected={isConnected}
           />
         )}
         {isExpanded && (
@@ -128,10 +130,12 @@ export default class Pool extends Component {
               <Statistics
                 t={`${token.unit} Deposited`}
                 v={`${roundValue(token.deposited)} ${token.unit}`}
+                isConnected={isConnected}
               />
               <Statistics
                 t={"Claimable Rewards"}
                 v={`${roundValue(token.rewards)} GDAO`}
+                isConnected={isConnected}
               />
             </div>
             <div className="fields">
@@ -163,7 +167,7 @@ export default class Pool extends Component {
             <div className="claims">
               <div className="title">Available rewards:</div>
               <div className="value">{`${
-                token.rewards !== null ? roundValue(token.rewards) : "-"
+                isConnected ? roundValue(token.rewards) : "-"
               } GDAO`}</div>
               <button
                 className="claim-btn"

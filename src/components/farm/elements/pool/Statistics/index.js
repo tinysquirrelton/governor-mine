@@ -1,6 +1,6 @@
 import React from "react";
 
-export const Statistics = ({ t, v }) => (
+export const Statistics = ({ t, v, isConnected }) => (
   <div className="stats">
     <div className="title">{t}:</div>
     <div className="value">
@@ -9,7 +9,8 @@ export const Statistics = ({ t, v }) => (
       v === "$null" ||
       v === "null%" ||
       v === "$Infinity" ||
-      v === "Infinity%"
+      v === "Infinity%" ||
+      !isConnected
         ? "-"
         : v}
     </div>

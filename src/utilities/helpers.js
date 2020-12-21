@@ -17,7 +17,15 @@ window.mobilecheck = function () {
 
 export const roundValue = (v) => {
   try {
-    return Math.round((v + Number.EPSILON) * 100) / 100;
+    if (parseInt(v) || parseFloat(v) || v >= 0) {
+      if (v === 0) {
+        return v;
+      } else {
+        return Math.round((v + Number.EPSILON) * 100) / 100;
+      }
+    } else {
+      return null;
+    }
   } catch (err) {
     return v;
   }
