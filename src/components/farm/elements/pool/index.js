@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { toast } from "react-toastify";
-
 import Box from "./Boxes";
 import Row from "./Rows";
 import { InputField } from "./inputField";
@@ -25,84 +24,67 @@ export default class Pool extends Component {
 
   onMaxDeposit = () => {
     this.setState({ toDeposit: this.props.token.depositable });
-
-    // let amountToDeposit = this.props.w3.web3.utils.toWei(
-    //   this.props.token.depositable.toString()
-    // ); //converting to big number
-    // let poolID = this.props.token.poolID; //need poolID for farm contract function
-    // let farmContractAddress = this.props.farmContract._address;
-    // let userBalance = this.props.w3.web3.utils.toWei(
-    //   (this.props.token.depositable * 2).toString()
-    // ); //getting userBalance but multiply by 2 just to be safe - and using web3.utils to convert to big number
-
-    // this.state.tokenContract.methods
-    //   .approve(farmContractAddress, userBalance)
-    //   .send({ from: this.state.userAddress }) //approving farm contract to spend tokens
-    //   //you can do a check that allows the user to deposit right away if they already approved before
-    //   .then((res) => {
-    //     //use the token allowance() function to check for this - but probably best to force approval everytime
-    //     if (res.status === true) {
-    //       this.props.farmContract.methods
-    //         .deposit(poolID, amountToDeposit)
-    //         .send({ from: this.state.userAddress }); //depositing the amount the user entered
-    //     } else {
-    //       //you can alert user here if you want or reapprove
-    //     }
-    //   });
   };
 
   onMaxWithdraw = () => {
     this.setState({ toDeposit: this.props.token.deposited });
-    // let amountToWithdraw = this.props.w3.web3.utils.toWei(
-    //   this.props.token.deposited.toString()
-    // ); //converting to big number
-    // let poolID = this.props.token.poolID; //need poolID for farm contract function
-    // this.props.farmContract.methods
-    //   .withdraw(poolID, amountToWithdraw)
-    //   .send({ from: this.state.userAddress });
   };
 
   onDepositExecute = () => {
-    let farmContractAddress = this.props.farmContract._address;
-    let userBalance = this.props.w3.web3.utils.toWei(
-      (this.props.token.depositable * 2).toString()
-    );
-    let amountToDeposit = this.props.w3.web3.utils.toWei(
-      this.state.toDeposit.toString()
-    );
-    let poolID = this.props.token.poolID;
-    this.state.tokenContract.methods
-      .approve(farmContractAddress, userBalance)
-      .send({ from: this.state.userAddress })
+    const { w3, token, farmContract } = this.props;
+    const tD = this.state.toDeposit;
+    let uB = w3.web3.utils.toWei((token.depositable * 2).toString()); // User balance
+    let d = w3.web3.utils.toWei(tD.toString()); // To deposit
+
+    token.contract.methods
+      .approve(farmContract._address, uB)
+      .send({ from: w3.address })
       .then((res) => {
         if (res.status === true) {
-          this.props.farmContract.methods
-            .deposit(poolID, amountToDeposit)
-            .send({ from: this.state.userAddress });
+          farmContract.methods
+            .deposit(token.pid, d)
+            .send({ from: w3.address })
+            .then((res) => {
+              toast.success("Successfully deposited.");
+              token.deposited =
+                token.deposited === null ? tD : token.deposited + tD;
+              this.setState({ toDeposit: 0.0 });
+            })
+            .catch((err) => toast.error("Could not deposit."));
         } else {
-          //you can alert user here if you want or reapprove
+          toast.error("Could not deposit.");
         }
       });
   };
 
   onWithdrawExcecute = () => {
-    let amountToWithdraw = this.props.w3.web3.utils.toWei(
-      this.state.toWithdraw.toString()
-    );
-    let poolID = this.props.token.poolID;
-    this.props.farmContract.methods
-      .withdraw(poolID, amountToWithdraw)
-      .send({ from: this.state.userAddress });
+    const { w3, token, farmContract } = this.props;
+    const tW = this.state.toWithdraw;
+    let w = w3.web3.utils.toWei(tW.toString()); // To withdraw
+
+    farmContract.methods
+      .withdraw(token.pid, w)
+      .send({ from: w3.address })
+      .then((res) => {
+        toast.success("Successfully withdrawn.");
+        token.deposited = token.deposited < tW ? 0 : token.deposited - tW;
+        this.setState((prevState) => ({
+          toWithdraw: 0.0,
+          toDeposit: prevState.toDeposit + tW,
+        }));
+      })
+      .catch((err) => toast.error("Could not withdraw."));
   };
 
   onClaim = () => {
-    this.props.farmContract.methods
-      .deposit(this.props.token.pid, 0)
-      .send({ from: this.props.w3.address })
+    const { w3, token, farmContract } = this.props;
+    farmContract.methods
+      .deposit(token.pid, 0)
+      .send({ from: w3.address })
       .then((res) => {
         toast.success("Rewards claimed.");
-        this.props.token.rewards = null; // resetting the rewards counter
-        this.setState({}); // re-render to update values on screen
+        token.rewards = null;
+        this.setState({});
       })
       .catch((err) => toast.error("Could not claim rewards."));
   };
