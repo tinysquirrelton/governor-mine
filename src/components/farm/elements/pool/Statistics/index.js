@@ -6,8 +6,10 @@ export const Statistics = ({ t, v }) => (
     <div className="value">
       {v === null ||
       v === "undefined" ||
-      v.includes("null") ||
-      v.includes("Infinity")
+      v === "$null" ||
+      v === "null%" ||
+      v === "$Infinity" ||
+      v === "Infinity%"
         ? "-"
         : v}
     </div>

@@ -50,9 +50,9 @@ export default class Farm extends Component {
       <div className="max-width-container">
         <div className="farm-container">
           <div className="farm-title">
-            {this.props.isLarge && <div className="title-text">GDAO Farm</div>}
+            {this.props.isLarge && <div className="title-text">GDAO Mine</div>}
             <ConnectButton w3={this.props.w3} />
-            {!this.props.isLarge && <div className="title-text">GDAO Farm</div>}
+            {!this.props.isLarge && <div className="title-text">GDAO Mine</div>}
           </div>
           <div className="farm-subtitle">{`TVL: $${tvl}`}</div>
           <div className="farm-subtitle">{`Circulating Supply: ${supply}`}</div>

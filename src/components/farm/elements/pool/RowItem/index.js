@@ -6,8 +6,10 @@ export const RowItem = ({ c, t, s }) => (
     <div className="subtitle">
       {s === null ||
       s === "undefined" ||
-      s.includes("null") ||
-      s.includes("Infinity")
+      s === "$null" ||
+      s === "null%" ||
+      s === "$Infinity" ||
+      s === "Infinity%"
         ? "-"
         : s}
     </div>
