@@ -58,14 +58,13 @@ export default class App extends Component {
         await token.getAPY(this.w3, this.wethContract, this.usdcContract);
         await token.getTVL(this.w3);
         if (isConnected) {
-          await token.getDepositable(this.w3, token.address);
-          await token.getDeposited(this.w3, this.w3.address, this.farmContract);
+          await token.getDepositable(this.w3);
+          await token.getDeposited(this.w3, this.farmContract);
         }
       });
       await Promise.all(tasks);
       this.setState({ isConnected: isConnected });
     }
-
   }
 
   componentWillUnmount() {
@@ -90,7 +89,7 @@ export default class App extends Component {
           pool.text,
           pool.unit,
           pool.logo,
-          pool.pid,
+          pool.pid
         )
     );
   };
@@ -114,7 +113,8 @@ export default class App extends Component {
       this.setState({ isConnected: false });
     } else if (changeType === "CHANGED_ACCOUNT") {
       const tasks = this.tokens.map(async (token) => {
-        await token.getDepositable(this.w3, token.address);
+        await token.getDepositable(this.w3);
+        await token.getDeposited(this.w3, this.farmContract);
       });
       await Promise.all(tasks);
       this.setState({ isConnected: true });

@@ -140,16 +140,16 @@ export default class Token {
     }
   }
 
-  async getDepositable(w3, address) {
-    if (w3.isAddressValid() && w3.isAddressValid(address)) {
+  async getDepositable(w3) {
+    if (w3.isAddressValid() && w3.isAddressValid(this.address)) {
       let b = await this.contract.methods.balanceOf(w3.address).call();
       this.depositable = await w3.getWeiToETH(b);
     }
   }
 
-  async getDeposited(w3, address, contract) {
-    if (w3.isAddressValid() && w3.isAddressValid(address)) {
-      let b = await contract.methods.userInfo(this.pid, address).call();
+  async getDeposited(w3, contract) {
+    if (w3.isAddressValid()) {
+      let b = await contract.methods.userInfo(this.pid, w3.address).call();
       this.deposited = await w3.getWeiToETH(b.amount);
     }
   }
