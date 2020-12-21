@@ -89,5 +89,6 @@ export const prodpools = [
     unit: "YFI",
     address: "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e",
     lpAddress: "0x2fDbAdf3C4D5A8666Bc06645B8358ab803996E28",
+    pid: "8",
   },
 ];
