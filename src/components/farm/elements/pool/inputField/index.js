@@ -10,6 +10,7 @@ export const InputField = ({
   onChange,
   buttonTitle,
   isConnected,
+  subtitle,
 }) => (
   <form onSubmit={(e) => e.preventDefault()} className="input-field">
     <div className="input-label">
@@ -30,6 +31,7 @@ export const InputField = ({
         />
       </div>
     </div>
+    {subtitle !== null && <div className="input-subtitle">{subtitle}</div>}
     <button
       className="action-btn"
       onClick={onAction}

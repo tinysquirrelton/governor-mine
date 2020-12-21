@@ -139,6 +139,11 @@
             font-weight: 400;
           }
         }
+        & .input-subtitle {
+          display: block;
+          font-size: 12px;
+          margin: 6px 0;
+        }
         & .input-container {
           display: flex;
           align-items: center;
@@ -194,6 +199,9 @@
       & .input-field {
         &:first-child {
           & .input-label {
+            text-align: right;
+          }
+          & .input-subtitle {
             text-align: right;
           }
           & .action-btn {

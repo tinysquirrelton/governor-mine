@@ -118,6 +118,11 @@
           font-weight: 400;
         }
       }
+      & .input-subtitle {
+        display: block;
+        font-size: 12px;
+        margin: 8px 0;
+      }
       & .input-container {
         display: flex;
         align-items: center;

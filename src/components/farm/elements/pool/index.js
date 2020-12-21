@@ -27,7 +27,7 @@ export default class Pool extends Component {
   };
 
   onMaxWithdraw = () => {
-    this.setState({ toDeposit: this.props.token.deposited });
+    this.setState({ toWithdraw: this.props.token.deposited });
   };
 
   onDepositExecute = () => {
@@ -141,6 +141,7 @@ export default class Pool extends Component {
                 onChange={(e) => this.onDepositChange(e)}
                 buttonTitle={"Deposit"}
                 isConnected={isConnected}
+                subtitle={"Deposit Fee: 2%"}
               />
               <InputField
                 title={"Staked in contract"}
@@ -152,6 +153,7 @@ export default class Pool extends Component {
                 onChange={(e) => this.onWithdrawChange(e)}
                 buttonTitle={"Withdraw"}
                 isConnected={isConnected}
+                subtitle={"Withdraw and claim rewards"}
               />
             </div>
             <div className="claims">
