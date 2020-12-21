@@ -6,7 +6,7 @@ import W3C from "./data/web3/class";
 import Token from "./data/token/class";
 import { pools } from "./utilities/constants/constants";
 import ERC20 from "./data/token/abi/ERC20.json";
-import FARM from "./data/token/abi/farmContract.json";
+import FarmABI from "./data/token/abi/FarmABI.json";
 
 import {
   wETHAddress,
@@ -59,7 +59,7 @@ export default class App extends Component {
         await token.getTVL(this.w3);
         if (isConnected) {
           await token.getDepositable(this.w3, token.address);
-          await token.getDeposited(this.w3, this.w3.address, this.farmContract, token.poolID);
+          await token.getDeposited(this.w3, this.w3.address, this.farmContract);
         }
       });
       await Promise.all(tasks);
@@ -90,7 +90,7 @@ export default class App extends Component {
           pool.text,
           pool.unit,
           pool.logo,
-          pool.poolID,
+          pool.pid,
         )
     );
   };
@@ -100,7 +100,7 @@ export default class App extends Component {
   };
 
   getContractFarm = (w3, address) => {
-    return new w3.web3.eth.Contract(FARM.abi, address);
+    return new w3.web3.eth.Contract(FarmABI.abi, address);
   };
 
   setChanged = async (changeType) => {

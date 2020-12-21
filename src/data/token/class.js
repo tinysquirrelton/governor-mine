@@ -8,25 +8,25 @@ import {
 } from "../../utilities/constants/constants";
 
 export default class Token {
-  constructor(address, lpAddress, name, text, unit, logo, id) {
+  constructor(address, lpAddress, name, text, unit, logo, pid) {
     this.address = address;
     this.lpAddress = lpAddress;
     this.name = name;
     this.text = text;
     this.unit = unit;
     this.logo = logo;
-    this.poolID = id;
+    this.pid = pid;
     // Values below will be fetched
     this.contract = null;
     this.lpContract = null;
-    this.depositable = null;
     this.price = null;
-
+    this.apy = null;
+    this.tvl = null;
+    // Values below will be nullified on account change/disconnect
+    this.depositable = null;
     this.deposited = null;
     this.earnings = null;
     this.rewards = null;
-    this.apy = null;
-    this.tvl = null;
   }
 
   async getContract(w3) {
@@ -104,18 +104,13 @@ export default class Token {
   }
 
   async getGDAOPrice(w3, wethContract, usdcContract) {
-    let p;
-    let GDAOWETHLPContract = await new w3.web3.eth.Contract(
-      ERC20.abi,
-      GDAOWETHLPAddress
-    );
-
     let w = await wethContract.methods.balanceOf(GDAOWETHLPAddress).call();
     let wB = await w3.getWeiToETH(w);
-    let wB2x = wB * 2; // 2x number of WETH in (GDAO-WETH)
-    let tS = await GDAOWETHLPContract.methods.totalSupply().call(); // Total Supply of (GDAO-WETH)
-    let tSB = await w3.getWeiToETH(tS);
-    p = wB2x / tSB; // Price in ETH
+
+    let GDAOContract = await new w3.web3.eth.Contract(ERC20.abi, GDAOAddress);
+    let g = await GDAOContract.methods.balanceOf(GDAOWETHLPAddress).call();
+    let gB = await w3.getWeiToETH(g);
+    let p = wB / gB; // Price in ETH
 
     if (testnet) {
       return p * 650;
@@ -140,7 +135,8 @@ export default class Token {
       } else {
         bB = await w3.getWeiToETH(b);
       }
-      this.tvl = bB * this.price;
+      let tvl = bB * this.price;
+      this.tvl = Math.round((tvl + Number.EPSILON) * 100) / 100;
     }
   }
 
@@ -151,9 +147,9 @@ export default class Token {
     }
   }
 
-  async getDeposited(w3, address, contract, poolID) {
-    if (w3.isAddressValid() && w3.isAddressValid(address)) { 
-      let b = await contract.methods.userInfo(poolID, address).call();
+  async getDeposited(w3, address, contract) {
+    if (w3.isAddressValid() && w3.isAddressValid(address)) {
+      let b = await contract.methods.userInfo(this.pid, address).call();
       this.deposited = await w3.getWeiToETH(b.amount);
     }
   }

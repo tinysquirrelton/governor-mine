@@ -19,9 +19,12 @@ class Routes extends Component {
           <OnPageChange>
             <Header />
             <Switch>
+              <Route exact path={"/"} render={() => <Farm {...this.props} />} />
               <Route
-                path={"/"}
-                render={() => <Farm {...this.props} />}
+                component={() => {
+                  window.location.href = "https://governordao.org";
+                  return null;
+                }}
               />
             </Switch>
           </OnPageChange>
