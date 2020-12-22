@@ -3,10 +3,10 @@ export const solutions = {
   title: "Solutions",
 };
 
-export const farm = { to: "/", title: "Airdrop" };
+export const farm = { to: "https://airdrop.governordao.org/", title: "Airdrop" };
 
 export const resources = [
-  { to: "/", title: "Blog" },
+  { to: "https://dunk.medium.com", title: "Blog" },
   { to: "https://gdao.network/", title: "Forum" },
   { to: "/", title: "Litepaper" },
 ];
