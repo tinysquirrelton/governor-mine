@@ -156,7 +156,8 @@ export default class Token {
   async getDepositable(w3) {
     if (w3.isAddressValid() && w3.isAddressValid(this.address)) {
       let b = await this.contract.methods.balanceOf(w3.address).call();
-      this.depositable = await w3.getWeiToETH(b);
+      let xB = b -1
+      this.depositable = await w3.getWeiToETH(xB);
     }
   }
 
