@@ -113,6 +113,7 @@
         padding-bottom: 8px;
         font-size: 14px;
         font-weight: 500;
+        
         & span {
           font-size: 12px;
           font-weight: 400;
@@ -130,6 +131,7 @@
         border: solid 1px darkgrey;
         border-radius: 0.5rem;
         padding: 8px 14px;
+        
         & .max-btn {
           font-size: 14px;
           color: #999999;
@@ -215,6 +217,11 @@
   flex-wrap: wrap;
 }
 
+.attention {
+  color: red;
+  text-transform: uppercase;
+  font-weight: bold;
+}
 
 .hide {
   display: none;
