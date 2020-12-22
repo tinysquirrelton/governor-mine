@@ -5,8 +5,6 @@ import Pool from "./elements/pool";
 import { roundValue } from "../../utilities/helpers";
 import "./style.scss";
 
-const supply = "10,000,000";
-
 export default class Farm extends Component {
   constructor(props) {
     super(props);
@@ -58,7 +56,7 @@ export default class Farm extends Component {
           <div className="farm-subtitle">{`TVL: ${
             this.props.isConnected ? `$${roundValue(tvl)}` : "-"
           }`}</div>
-          <div className="farm-subtitle">{`Circulating Supply: ${supply}`}</div>
+          <div className="farm-subtitle">{`Circulating Supply: ${this.props.circulatingSupply}`}</div>
           <HideZeroes
             hideZeroes={this.state.hideZeroes}
             toggleZeroes={this.toggleZeroes}
