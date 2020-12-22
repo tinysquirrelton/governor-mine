@@ -12,6 +12,11 @@ import {
   wETHAddress,
   USDCAddress,
   farmAddress,
+  GDAOAddress,
+  AirdropAddress,
+  MinesAddress,
+  AirdropRewardAddresss,
+  BurnPurgatoryAddress,
   testnet,
 } from "./utilities/constants/constants";
 
@@ -25,6 +30,7 @@ export default class App extends Component {
     this.wethContract = null;
     this.usdcContract = null;
     this.farmContract = null;
+    this.circulatingSupply = 0;
     this.state = {
       isSmall: null,
       isMedium: null,
@@ -47,9 +53,12 @@ export default class App extends Component {
     if (this.w3.web3 !== null) {
       this.wethContract = this.getContract(this.w3, wETHAddress);
       this.usdcContract = this.getContract(this.w3, USDCAddress);
+      this.gdaoContract = this.getContract(this.w3,GDAOAddress);
       this.farmContract = this.getContractFarm(this.w3, farmAddress);
       // Init Token Contracts if Mainnet or Test-mode enabled
       chainId = await this.w3.web3.eth.getChainId();
+      // Calculate circulating supply
+      this.circulatingSupply = this.getCirculatingSupply();
     }
 
     if (
@@ -108,6 +117,15 @@ export default class App extends Component {
     return new w3.web3.eth.Contract(FarmABI.abi, address);
   };
 
+  getCirculatingSupply = async () => {
+    let totalSupply = await this.gdaoContract.methods.totalSupply().call()/(10**18);
+    let airdropUnclaimed = await this.gdaoContract.methods.balanceOf(AirdropAddress).call()/(10**18);
+    let minesBalance = await this.gdaoContract.methods.balanceOf(MinesAddress).call()/(10**18);
+    let airdropRewardBalance = await this.gdaoContract.methods.balanceOf(AirdropRewardAddresss).call()/(10**18);
+    let burnPurgatoryBalance = await this.gdaoContract.methods.balanceOf(BurnPurgatoryAddress).call()/(10**18);
+    this.circulatingSupply = ( Number((totalSupply - airdropUnclaimed - minesBalance - airdropRewardBalance - burnPurgatoryBalance).toFixed(1)) ).toLocaleString();
+  }
+
   setChanged = async (changeType) => {
     if (changeType === "DISCONNECTED") {
       this.tokens.forEach((token) => {
@@ -141,6 +159,7 @@ export default class App extends Component {
         <Routes
           w3={this.w3}
           tokens={this.tokens}
+          circulatingSupply={this.circulatingSupply}
           farmContract={this.farmContract}
           isConnected={this.state.isConnected}
           isSmall={this.state.isSmall}

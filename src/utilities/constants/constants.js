@@ -29,6 +29,26 @@ export const USDCAddress = testnet
   ? "0xb7dbd69de83e7ed358c7687c1c1970e5dd121818"
   : "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
 
+// Airdrop Contract Address
+export const AirdropAddress = testnet
+? "0x7ea0F8Bb2f01C197985C285E193dd5b8A69836c0"
+: "0x7ea0F8Bb2f01C197985C285E193dd5b8A69836c0";
+
+// Mines Contract 
+export const MinesAddress = testnet
+? "0x4DaC3e07316D2A31baABb252D89663deE8F76f09"
+: "0x4DaC3e07316D2A31baABb252D89663deE8F76f09";
+
+// Airdrop Rewards Pool
+export const AirdropRewardAddresss = testnet
+? "0xee6ac0ae56497c3479e858f0e9d59f5d8f8f89ea"
+: "0xee6ac0ae56497c3479e858f0e9d59f5d8f8f89ea";
+
+// Burn Purgatory Address
+export const BurnPurgatoryAddress = testnet
+? "0x925b1f1bd3c28ea9f03fc00b8e069ef738ff740d"
+: "0x925b1f1bd3c28ea9f03fc00b8e069ef738ff740d";
+
 // Chain ID - 1: Mainnet - 4: Rinkeby
 export const chainId = testnet ? 4 : 1;
 
@@ -43,7 +63,7 @@ export const pools = testnet ? testpools : prodpools;
 // Farm Address
 export const farmAddress = testnet
   ? "0xdf2A82d8a34F139f649000e43f60C921F769a947"
-  : "0x4D184bf6F805Ee839517164D301f0C4e5d25c374";
+  : "0x4DaC3e07316D2A31baABb252D89663deE8F76f09";
 
 //------------------------------
 

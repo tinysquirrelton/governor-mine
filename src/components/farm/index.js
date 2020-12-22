@@ -58,7 +58,7 @@ export default class Farm extends Component {
           <div className="farm-subtitle">{`TVL: ${
             this.props.isConnected ? `$${roundValue(tvl)}` : "-"
           }`}</div>
-          <div className="farm-subtitle">{`Circulating Supply: ${supply}`}</div>
+          <div className="farm-subtitle">{`Circulating Supply: ${this.props.circulatingSupply}`}</div>
           <HideZeroes
             hideZeroes={this.state.hideZeroes}
             toggleZeroes={this.toggleZeroes}
