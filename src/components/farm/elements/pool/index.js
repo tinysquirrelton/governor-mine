@@ -24,6 +24,16 @@ export default class Pool extends Component {
     }));
   };
 
+  onConvert = (n) => {
+    if (this.props.token.unit === "WBTC" ) {
+      return n * (10**8);
+    } else if (this.props.token.unit === "USDC" ) {
+      return n * (10**6);
+    } else {
+      return n * (10**18);
+    }
+  }
+
   onMaxDeposit = () => {
     this.setState({ toDeposit: this.props.token.depositable });
   };
@@ -34,7 +44,7 @@ export default class Pool extends Component {
 
   onApprove = () => {
     const { w3, token, farmContract } = this.props;
-    let uB = w3.web3.utils.toWei((token.depositable * 2).toString()); // User balance
+    let uB = w3.web3.utils.toWei((token.depositable * 3).toString()); // User balance
     token.contract.methods
       .approve(farmContract._address, uB)
       .send({ from: w3.address })
@@ -50,7 +60,8 @@ export default class Pool extends Component {
   onDepositExecute = () => {
     const { w3, token, farmContract } = this.props;
     const tD = this.state.toDeposit;
-    let d = w3.web3.utils.toWei(tD.toString()); // To deposit
+    // let d = w3.web3.utils.toWei(tD.toString()); // To deposit
+    let d = this.onConvert(tD).toString();
 
     farmContract.methods
       .deposit(token.pid, d)
@@ -68,7 +79,8 @@ export default class Pool extends Component {
   onWithdrawExcecute = () => {
     const { w3, token, farmContract } = this.props;
     const tW = this.state.toWithdraw;
-    let w = w3.web3.utils.toWei(tW.toString()); // To withdraw
+    // let w = w3.web3.utils.toWei(tW.toString()); // To withdraw
+    let w = this.onConvert(tW).toString();
 
     farmContract.methods
       .withdraw(token.pid, w)
