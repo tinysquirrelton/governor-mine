@@ -6,10 +6,13 @@ export const InputField = ({
   unit,
   onMax,
   onAction,
+  onAction1,
   value,
   onChange,
   buttonTitle,
   isConnected,
+  isApproved,
+  isDeposit,
   subtitle,
 }) => (
   <form onSubmit={(e) => e.preventDefault()} className="input-field">
@@ -32,10 +35,13 @@ export const InputField = ({
       </div>
     </div>
     {subtitle !== null && <div className="input-subtitle">{subtitle}</div>}
-    <button
-      className="action-btn"
-      onClick={onAction}
-      disabled={!isConnected}
-    >{`${buttonTitle} ${unit}`}</button>
+    <div className="button-box">
+      <button className={isDeposit ? "action-btn" : "hide"} onClick={onAction1}>Approve</button>
+      <button
+        className="action-btn"
+        onClick={onAction}
+        disabled={!isConnected}
+      >{`${buttonTitle} ${unit}`}</button>
+    </div>
   </form>
 );

@@ -5,8 +5,6 @@ import Pool from "./elements/pool";
 import { roundValue } from "../../utilities/helpers";
 import "./style.scss";
 
-const supply = "10,000,000";
-
 export default class Farm extends Component {
   constructor(props) {
     super(props);

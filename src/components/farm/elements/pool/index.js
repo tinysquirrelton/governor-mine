@@ -14,6 +14,7 @@ export default class Pool extends Component {
       isExpanded: null,
       toDeposit: 0.0,
       toWithdraw: 0.0,
+      isApproved: false,
     };
   }
 
@@ -31,32 +32,38 @@ export default class Pool extends Component {
     this.setState({ toWithdraw: this.props.token.deposited });
   };
 
-  onDepositExecute = () => {
+  onApprove = () => {
     const { w3, token, farmContract } = this.props;
-    const tD = this.state.toDeposit;
     let uB = w3.web3.utils.toWei((token.depositable * 2).toString()); // User balance
-    let d = w3.web3.utils.toWei(tD.toString()); // To deposit
-
     token.contract.methods
       .approve(farmContract._address, uB)
       .send({ from: w3.address })
       .then((res) => {
         if (res.status === true) {
-          farmContract.methods
-            .deposit(token.pid, d)
-            .send({ from: w3.address })
-            .then((res) => {
-              toast.success("Successfully deposited.");
-              token.deposited =
-                token.deposited === null ? tD : token.deposited + tD;
-              this.setState({ toDeposit: 0.0 });
-            })
-            .catch((err) => toast.error("Could not deposit."));
-        } else {
-          toast.error("Could not deposit.");
-        }
-      });
+          toast.success("Successfully approved.");
+          this.setState({isApproved: true});
+        } 
+      })
+      .catch((err) => toast.error("Could not approve."));
   };
+
+  onDepositExecute = () => {
+    const { w3, token, farmContract } = this.props;
+    const tD = this.state.toDeposit;
+    let d = w3.web3.utils.toWei(tD.toString()); // To deposit
+
+    farmContract.methods
+      .deposit(token.pid, d)
+      .send({ from: w3.address })
+      .then((res) => {
+        toast.success("Successfully deposited.");
+        token.deposited =
+          token.deposited === null ? tD : token.deposited + tD;
+        this.setState({ toDeposit: 0.0 });
+      })
+      .catch((err) => toast.error("Could not deposit."));
+  
+};
 
   onWithdrawExcecute = () => {
     const { w3, token, farmContract } = this.props;
@@ -100,7 +107,7 @@ export default class Pool extends Component {
 
   render() {
     const { token, isSmall, isConnected } = this.props;
-    const { isExpanded, toDeposit, toWithdraw } = this.state;
+    const { isExpanded, toDeposit, toWithdraw, isApproved } = this.state;
 
     return (
       <div
@@ -145,10 +152,13 @@ export default class Pool extends Component {
                 unit={token.unit}
                 onMax={this.onMaxDeposit}
                 onAction={this.onDepositExecute}
+                onAction1={this.onApprove}
                 value={toDeposit}
                 onChange={(e) => this.onDepositChange(e)}
                 buttonTitle={"Deposit"}
                 isConnected={isConnected}
+                isApproved={isApproved}
+                isDeposit={true}
                 subtitle={"Deposit Fee: 2%"}
               />
               <InputField
@@ -161,6 +171,7 @@ export default class Pool extends Component {
                 onChange={(e) => this.onWithdrawChange(e)}
                 buttonTitle={"Withdraw"}
                 isConnected={isConnected}
+                isDeposit={false}
                 subtitle={"Withdraw and claim rewards"}
               />
             </div>

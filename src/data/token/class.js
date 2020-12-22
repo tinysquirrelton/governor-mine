@@ -107,7 +107,7 @@ export default class Token {
 
       let n = gdaoPrice * xBy;
       let d = this.price * bB;
-      this.apy = n / d;
+      this.apy = n / d * 2;
     }
   }
 
