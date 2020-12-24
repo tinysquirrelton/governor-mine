@@ -21,7 +21,7 @@ export const roundValue = (v) => {
       if (v === 0) {
         return v;
       } else {
-        return Math.round((v + Number.EPSILON) * 10000) / 10000;
+        return Number(v.toFixed(2)).toLocaleString()
       }
     } else {
       return null;

@@ -26,11 +26,11 @@ export default class Pool extends Component {
 
   onConvert = (n) => {
     if (this.props.token.unit === "WBTC" ) {
-      return n * (10**8);
+      return Math.floor(n * (10**8) / 100) * 100;
     } else if (this.props.token.unit === "USDC" ) {
-      return n * (10**6);
+      return Math.floor(n * (10**6) / 100) * 100;
     } else {
-      return n * (10**18);
+      return Math.floor(n * (10**18) / 100) * 100;
     }
   }
 

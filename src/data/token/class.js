@@ -149,7 +149,7 @@ export default class Token {
       } else {
         bB = await w3.getWeiToETH(b);
       }
-      this.tvl = bB * this.price;
+      this.tvl = (bB * this.price);
     }
   }
 
@@ -163,7 +163,7 @@ export default class Token {
       } else if (this.name === "WBTC") {
         bB = xB / 10 ** 8;
       } else {
-        bB = await w3.getWeiToETH(xB);
+        bB = await w3.getWeiToETH(xB.toString());
       }
       this.depositable = bB;
     }
@@ -178,7 +178,7 @@ export default class Token {
       } else if (this.name === "WBTC") {
         bB = b.amount / 10 ** 8;
       } else {
-        bB = await w3.getWeiToETH(b.amount);
+        bB = await w3.getWeiToETH(b.amount.toString());
       }
       this.deposited = bB;
     }
