@@ -30,3 +30,20 @@ export const roundValue = (v) => {
     return v;
   }
 };
+
+export const convertToETH = (v,name) => {
+
+  let number;
+  if (name === 'USDC') {
+
+    number = ( v / (10**6) ).toFixed(5)
+  } else if (name === 'WBTC') {
+
+    number = ( v / (10**8) ).toFixed(5)
+  } else {
+
+    number = ( v / (10**18) ).toFixed(5)
+  }
+
+  return number;
+}

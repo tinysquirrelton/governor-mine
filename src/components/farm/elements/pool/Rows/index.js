@@ -1,7 +1,7 @@
 import React from "react";
 import { Expander } from "../Expander";
 import { RowItem } from "../RowItem";
-import { roundValue } from "../../../../../utilities/helpers";
+import { roundValue, convertToETH } from "../../../../../utilities/helpers";
 
 import "./style.scss";
 
@@ -34,7 +34,7 @@ const Row = (props) => {
       <RowItem
         c={"row-deposit"}
         t={"Available to deposit"}
-        s={roundValue(token.depositable)}
+        s={convertToETH(token.depositable,token.unit)}
         isConnected={isConnected}
       />
       <div className="row-expander">

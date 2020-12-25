@@ -156,31 +156,30 @@ export default class Token {
   async getDepositable(w3) {
     if (w3.isAddressValid() && w3.isAddressValid(this.address)) {
       let b = await this.contract.methods.balanceOf(w3.address).call();
-      let xB = b - 1;
-      let bB;
-      if (this.name === "USDC") {
-        bB = xB / 10 ** 6;
-      } else if (this.name === "WBTC") {
-        bB = xB / 10 ** 8;
-      } else {
-        bB = await w3.getWeiToETH(xB.toString());
-      }
-      this.depositable = bB;
+      // let bB;
+      // if (this.name === "USDC") {
+      //   bB = b / 10 ** 6;
+      // } else if (this.name === "WBTC") {
+      //   bB = b / 10 ** 8;
+      // } else {
+      //   bB = await w3.getWeiToETH(b.toString());
+      // }
+      this.depositable = b;
     }
   }
 
   async getDeposited(w3, farmContract) {
     if (w3.isAddressValid()) {
       let b = await farmContract.methods.userInfo(this.pid, w3.address).call();
-      let bB;
-      if (this.name === "USDC") {
-        bB = b.amount / 10 ** 6;
-      } else if (this.name === "WBTC") {
-        bB = b.amount / 10 ** 8;
-      } else {
-        bB = await w3.getWeiToETH(b.amount.toString());
-      }
-      this.deposited = bB;
+      //let bB;
+      // if (this.name === "USDC") {
+      //   bB = b.amount / 10 ** 6;
+      // } else if (this.name === "WBTC") {
+      //   bB = b.amount / 10 ** 8;
+      // } else {
+      //   bB = b.amount
+      // }
+      this.deposited = b.amount;
     }
   }
 
