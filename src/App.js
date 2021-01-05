@@ -123,7 +123,7 @@ export default class App extends Component {
     let minesBalance = await this.gdaoContract.methods.balanceOf(MinesAddress).call()/(10**18);
     let airdropRewardBalance = await this.gdaoContract.methods.balanceOf(AirdropRewardAddresss).call()/(10**18);
     let burnPurgatoryBalance = await this.gdaoContract.methods.balanceOf(BurnPurgatoryAddress).call()/(10**18);
-    this.circulatingSupply = ( Number((totalSupply - airdropUnclaimed - minesBalance - airdropRewardBalance - burnPurgatoryBalance).toFixed(1)) ).toLocaleString();
+    this.circulatingSupply = ( Number((totalSupply - airdropUnclaimed - minesBalance - airdropRewardBalance - burnPurgatoryBalance).toFixed(0)) ).toLocaleString();
   }
 
   setChanged = async (changeType) => {
