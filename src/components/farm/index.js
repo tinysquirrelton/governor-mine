@@ -33,10 +33,15 @@ export default class Farm extends Component {
     const tvl = this.getTVL();
     const Pools = () => {
       return this.props.tokens.map((token, index) => {
+        console.log(token);
         if (
           this.state.hideZeroes === true &&
-          (token.depositable === null || token.depositable === 0) &&
-          (token.deposited === null || token.deposited === 0)
+          (token.depositable === null ||
+            token.depositable === 0 ||
+            token.depositable === "0") &&
+          (token.deposited === null ||
+            token.deposited === 0 ||
+            token.deposited === "0")
         ) {
           return null;
         } else {
