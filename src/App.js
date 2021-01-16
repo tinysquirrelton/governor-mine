@@ -147,7 +147,7 @@ export default class App extends Component {
 
   render() {
     return (
-      <div>
+      <>
         <ToastContainer
           position={"bottom-right"}
           autoClose={3000}
@@ -166,7 +166,7 @@ export default class App extends Component {
           isMedium={this.state.isMedium}
           isLarge={this.state.isLarge}
         />
-      </div>
+      </>
     );
   }
 }
