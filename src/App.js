@@ -31,18 +31,11 @@ export default class App extends Component {
     this.usdcContract = null;
     this.farmContract = null;
     this.circulatingSupply = 0;
-    this.state = {
-      isSmall: null,
-      isMedium: null,
-      isLarge: null,
-      isConnected: false,
-    };
+    this.state = { isConnected: false };
   }
 
   async componentDidMount() {
     let chainId;
-    window.addEventListener("resize", this.onResize.bind(this));
-    this.onResize();
 
     // Init Web3
     const isConnected = await this.w3.setConnection();
@@ -53,7 +46,7 @@ export default class App extends Component {
     if (this.w3.web3 !== null) {
       this.wethContract = this.getContract(this.w3, wETHAddress);
       this.usdcContract = this.getContract(this.w3, USDCAddress);
-      this.gdaoContract = this.getContract(this.w3,GDAOAddress);
+      this.gdaoContract = this.getContract(this.w3, GDAOAddress);
       this.farmContract = this.getContractFarm(this.w3, farmAddress);
       // Init Token Contracts if Mainnet or Test-mode enabled
       chainId = await this.w3.web3.eth.getChainId();
@@ -82,18 +75,6 @@ export default class App extends Component {
     }
   }
 
-  componentWillUnmount() {
-    window.removeEventListener("resize", this.onResize());
-  }
-
-  onResize = () => {
-    this.setState({
-      isLarge: window.innerWidth >= 992,
-      isMedium: window.innerWidth >= 768 && window.innerWidth < 992,
-      isSmall: window.innerWidth < 768,
-    });
-  };
-
   getTokens = () => {
     return pools.map(
       (pool) =>
@@ -118,13 +99,32 @@ export default class App extends Component {
   };
 
   getCirculatingSupply = async () => {
-    let totalSupply = await this.gdaoContract.methods.totalSupply().call()/(10**18);
-    let airdropUnclaimed = await this.gdaoContract.methods.balanceOf(AirdropAddress).call()/(10**18);
-    let minesBalance = await this.gdaoContract.methods.balanceOf(MinesAddress).call()/(10**18);
-    let airdropRewardBalance = await this.gdaoContract.methods.balanceOf(AirdropRewardAddresss).call()/(10**18);
-    let burnPurgatoryBalance = await this.gdaoContract.methods.balanceOf(BurnPurgatoryAddress).call()/(10**18);
-    this.circulatingSupply = ( Number((totalSupply - airdropUnclaimed - minesBalance - airdropRewardBalance - burnPurgatoryBalance).toFixed(0)) ).toLocaleString();
-  }
+    let totalSupply =
+      (await this.gdaoContract.methods.totalSupply().call()) / 10 ** 18;
+    let airdropUnclaimed =
+      (await this.gdaoContract.methods.balanceOf(AirdropAddress).call()) /
+      10 ** 18;
+    let minesBalance =
+      (await this.gdaoContract.methods.balanceOf(MinesAddress).call()) /
+      10 ** 18;
+    let airdropRewardBalance =
+      (await this.gdaoContract.methods
+        .balanceOf(AirdropRewardAddresss)
+        .call()) /
+      10 ** 18;
+    let burnPurgatoryBalance =
+      (await this.gdaoContract.methods.balanceOf(BurnPurgatoryAddress).call()) /
+      10 ** 18;
+    this.circulatingSupply = Number(
+      (
+        totalSupply -
+        airdropUnclaimed -
+        minesBalance -
+        airdropRewardBalance -
+        burnPurgatoryBalance
+      ).toFixed(0)
+    ).toLocaleString();
+  };
 
   setChanged = async (changeType) => {
     if (changeType === "DISCONNECTED") {
