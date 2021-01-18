@@ -11,12 +11,28 @@ export default class Pool extends Component {
     super(props);
     this.token = null;
     this.state = {
+      isSmall: null,
       isExpanded: null,
       toDeposit: 0.0,
       toWithdraw: 0.0,
-      isApproved: false
+      isApproved: false,
     };
   }
+
+  componentDidMount() {
+    window.addEventListener("resize", this.onResize.bind(this));
+    this.onResize();
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("resize", this.onResize());
+  }
+
+  onResize = () => {
+    this.setState({
+      isSmall: window.innerWidth < 768,
+    });
+  };
 
   toggleExpand = () => {
     this.setState((prevState) => ({
@@ -25,49 +41,43 @@ export default class Pool extends Component {
   };
 
   onConvert = (n) => {
-    if (this.props.token.unit === "WBTC" ) {
-      n = Math.floor( n * 10**7 ) / (10**5);
-      return this.props.w3.web3.utils.toWei(n.toString(),'mwei');
-    } else if (this.props.token.unit === "USDC" ) {
-      n = Math.floor( n * 10**5 ) / (10**5);
-      return this.props.w3.web3.utils.toWei(n.toString(),'mwei');
+    if (this.props.token.unit === "WBTC") {
+      n = Math.floor(n * 10 ** 7) / 10 ** 5;
+      return this.props.w3.web3.utils.toWei(n.toString(), "mwei");
+    } else if (this.props.token.unit === "USDC") {
+      n = Math.floor(n * 10 ** 5) / 10 ** 5;
+      return this.props.w3.web3.utils.toWei(n.toString(), "mwei");
     } else {
       return this.props.w3.web3.utils.toWei(n.toString());
     }
-  }
+  };
 
   onMaxDeposit = () => {
     let n = this.props.token.depositable;
-    
-    if (this.props.token.unit === 'USDC') {
 
-      n = Math.floor(n / 100) / (10**4)
+    if (this.props.token.unit === "USDC") {
+      n = Math.floor(n / 100) / 10 ** 4;
       this.setState({ toDeposit: n });
-    } else if (this.props.token.unit === 'WBTC') {
-
-      n = Math.floor(n / 100) / (10**6)
+    } else if (this.props.token.unit === "WBTC") {
+      n = Math.floor(n / 100) / 10 ** 6;
       this.setState({ toDeposit: n });
     } else {
-
-      n = Math.floor(n / (10**12)) / (10**6)
+      n = Math.floor(n / 10 ** 12) / 10 ** 6;
       this.setState({ toDeposit: n });
     }
   };
 
   onMaxWithdraw = () => {
     let n = this.props.token.deposited;
-    
-    if (this.props.token.unit === 'USDC') {
 
-      n = Math.floor(n / 100) / (10**4)
+    if (this.props.token.unit === "USDC") {
+      n = Math.floor(n / 100) / 10 ** 4;
       this.setState({ toWithdraw: n });
-    } else if (this.props.token.unit === 'WBTC') {
-
-      n = Math.floor(n / 100) / (10**6)
+    } else if (this.props.token.unit === "WBTC") {
+      n = Math.floor(n / 100) / 10 ** 6;
       this.setState({ toWithdraw: n });
     } else {
-
-      n = Math.floor(n / (10**12)) / (10**6)
+      n = Math.floor(n / 10 ** 12) / 10 ** 6;
       this.setState({ toWithdraw: n });
     }
   };
@@ -76,22 +86,22 @@ export default class Pool extends Component {
     const { w3, token, farmContract } = this.props;
     let b = token.depositable * 2;
     let uB;
-    if (this.props.token.unit === 'USDC') {
-      uB = this.onConvert(b / (10**6));
-    } else if (this.props.token.unit === 'WBTC') {
-      uB = this.onConvert(b / (10**8));
+    if (this.props.token.unit === "USDC") {
+      uB = this.onConvert(b / 10 ** 6);
+    } else if (this.props.token.unit === "WBTC") {
+      uB = this.onConvert(b / 10 ** 8);
     } else {
-      uB = this.onConvert(b / (10**18));
+      uB = this.onConvert(b / 10 ** 18);
     }
-    
+
     token.contract.methods
       .approve(farmContract._address, uB)
       .send({ from: w3.address })
       .then((res) => {
         if (res.status === true) {
           toast.success("Successfully approved.");
-          this.setState({isApproved: true});
-        } 
+          this.setState({ isApproved: true });
+        }
       })
       .catch((err) => toast.error("Could not approve."));
   };
@@ -106,18 +116,17 @@ export default class Pool extends Component {
       .send({ from: w3.address })
       .then((res) => {
         toast.success("Successfully deposited.");
-        this.setState(() => ({ 
-          toDeposit: 0.0
+        this.setState(() => ({
+          toDeposit: 0.0,
         }));
       })
       .catch((err) => toast.error("Could not deposit."));
-  
-};
+  };
 
   onWithdrawExcecute = () => {
     const { w3, token, farmContract } = this.props;
     const tW = this.state.toWithdraw;
-    let w = this.onConvert(tW)
+    let w = this.onConvert(tW);
 
     farmContract.methods
       .withdraw(token.pid, w)
@@ -125,7 +134,7 @@ export default class Pool extends Component {
       .then((res) => {
         toast.success("Successfully withdrawn.");
         this.setState(() => ({
-          toWithdraw: 0.0
+          toWithdraw: 0.0,
         }));
       })
       .catch((err) => toast.error("Could not withdraw."));
@@ -153,16 +162,16 @@ export default class Pool extends Component {
   };
 
   render() {
-    const { token, isSmall, isConnected } = this.props;
+    const { token, isConnected } = this.props;
     const { isExpanded, toDeposit, toWithdraw, isApproved } = this.state;
 
     return (
       <div
-        className={`farm-${isSmall ? "box" : "row"}-container ${
+        className={`farm-${this.state.isSmall ? "box" : "row"}-container ${
           isExpanded ? "expanded" : ""
         }`}
       >
-        {isSmall ? (
+        {this.state.isSmall ? (
           <Box
             token={token}
             toggleExpand={this.toggleExpand}
@@ -183,7 +192,9 @@ export default class Pool extends Component {
               <div className="title">Statistics:</div>
               <Statistics
                 t={`${token.unit} Deposited`}
-                v={`${convertToETH(token.deposited,this.props.token.unit)} ${token.unit}`}
+                v={`${convertToETH(token.deposited, this.props.token.unit)} ${
+                  token.unit
+                }`}
                 isConnected={isConnected}
               />
               <Statistics
@@ -195,7 +206,7 @@ export default class Pool extends Component {
             <div className="fields">
               <InputField
                 title={"Your wallet"}
-                current={convertToETH(token.depositable,this.props.token.unit)}
+                current={convertToETH(token.depositable, this.props.token.unit)}
                 unit={token.unit}
                 onMax={this.onMaxDeposit}
                 onAction={this.onDepositExecute}
@@ -210,7 +221,7 @@ export default class Pool extends Component {
               />
               <InputField
                 title={"Staked in contract"}
-                current={convertToETH(token.deposited,this.props.token.unit)}
+                current={convertToETH(token.deposited, this.props.token.unit)}
                 unit={token.unit}
                 onMax={this.onMaxWithdraw}
                 onAction={this.onWithdrawExcecute}

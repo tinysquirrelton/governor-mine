@@ -6,7 +6,11 @@
   position: relative;
   z-index: 10;
   max-width: 1000px;
+  min-height: calc(100vh - 75px);
   margin: 0 auto;
+  @include lg {
+    min-height: calc(100vh - 125px);
+  }
   & .farm-title {
     display: block;
     position: relative;
@@ -33,6 +37,10 @@
     color: white;
     letter-spacing: 1px;
     margin: 10px 0;
+    & span {
+      font-weight: 300;
+      opacity: 0.75;
+    }
   }
 }
 
