@@ -33,7 +33,6 @@ export default class Farm extends Component {
     const tvl = this.getTVL();
     const Pools = () => {
       return this.props.tokens.map((token, index) => {
-        console.log(token);
         if (
           this.state.hideZeroes === true &&
           (token.depositable === null ||
@@ -54,14 +53,32 @@ export default class Farm extends Component {
       <div className="max-width-container">
         <div className="farm-container">
           <div className="farm-title">
-            {this.props.isLarge && <div className="title-text">GDAO Mine</div>}
+            <div className="title-text">GDAO Mine</div>
             <ConnectButton w3={this.props.w3} />
-            {!this.props.isLarge && <div className="title-text">GDAO Mine</div>}
           </div>
-          <div className="farm-subtitle">{`TVL: ${
-            this.props.isConnected ? `$${roundValue(tvl)}` : "-"
-          }`}</div>
-          <div className="farm-subtitle">{`Circulating Supply: ${this.props.circulatingSupply}`}</div>
+          <div className="farm-subtitle">
+            <span>TVL:</span>
+            {`${this.props.isConnected ? ` $${roundValue(tvl)}` : " -"}`}
+          </div>
+          <div className="farm-subtitle">
+            <span>Circulating Supply:</span>
+            {` ${this.props.circulatingSupply}`}
+          </div>
+          <div className="farm-subtitle">
+            <a
+              href="https://etherscan.io/address/0x4DaC3e07316D2A31baABb252D89663deE8F76f09#code"
+              rel="noreferrer"
+              target="_blank"
+              style={{
+                fontSize: "0.8em",
+                color: "#ffffff",
+                display: "inline-block",
+                textAlign: "center",
+              }}
+            >
+              Mine Contract
+            </a>
+          </div>
           <HideZeroes
             hideZeroes={this.state.hideZeroes}
             toggleZeroes={this.toggleZeroes}

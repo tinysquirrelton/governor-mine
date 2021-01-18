@@ -9,12 +9,10 @@ export const ConnectButton = ({ w3, updateState }) => {
   };
 
   return (
-    <div className="connect-container">
-      <button className="connect-button" onClick={action}>
-        {w3.isConnected && w3.isAddressValid()
-          ? `Connected: ${w3.address.slice(0, 3)}...${w3.address.slice(-4)}`
-          : "Connect wallet"}
-      </button>
-    </div>
+    <button className="connect-button" onClick={action}>
+      {w3.isConnected && w3.isAddressValid()
+        ? `Connected: ${w3.address.slice(0, 3)}...${w3.address.slice(-4)}`
+        : "Connect wallet"}
+    </button>
   );
 };
