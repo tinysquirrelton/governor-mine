@@ -9,10 +9,12 @@ import {
   farmAddress,
 } from "../../utilities/constants/constants";
 
+
 export default class Token {
   constructor(address, lpAddress, name, text, unit, logo, pid) {
     this.address = address;
     this.lpAddress = lpAddress;
+    this.farmAddress = farmAddress;
     this.name = name;
     this.text = text;
     this.unit = unit;
@@ -28,6 +30,7 @@ export default class Token {
     this.depositable = null;
     this.deposited = null;
     this.rewards = null;
+    this.approved = 0;
   }
 
   async getContract(w3) {
@@ -189,6 +192,14 @@ export default class Token {
         .pendingGDAO(this.pid, w3.address)
         .call();
       this.rewards = await w3.getWeiToETH(b);
+    }
+  }
+
+  async getApprovedAmount(w3, tokenAddress, farmAddress) {
+    if (w3.isAddressValid()) {
+	  let GDAOContract = await new w3.web3.eth.Contract(ERC20.abi, tokenAddress);
+	  let allowance = await GDAOContract.methods.allowance(w3.address, farmAddress).call();
+	  this.approved = allowance;
     }
   }
 }
