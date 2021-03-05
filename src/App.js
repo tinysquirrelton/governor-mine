@@ -68,6 +68,7 @@ export default class App extends Component {
           await token.getDepositable(this.w3);
           await token.getDeposited(this.w3, this.farmContract);
           await token.getPendingGDAO(this.w3, this.farmContract);
+          await token.getApprovedAmount(this.w3, token.address, farmAddress);
         }
       });
       await Promise.all(tasks);
@@ -139,6 +140,8 @@ export default class App extends Component {
         await token.getDepositable(this.w3);
         await token.getDeposited(this.w3, this.farmContract);
         await token.getPendingGDAO(this.w3, this.farmContract);
+        await token.getApprovedAmount(this.w3, token.address, farmAddress);
+		console.log(token.approved);
       });
       await Promise.all(tasks);
       this.setState({ isConnected: true });
