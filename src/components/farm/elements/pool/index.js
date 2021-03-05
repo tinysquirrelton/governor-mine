@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import BigNumber from "bignumber.js/bignumber";
 import { toast } from "react-toastify";
 import Box from "./Boxes";
 import Row from "./Rows";
@@ -99,6 +100,7 @@ export default class Pool extends Component {
       .send({ from: w3.address })
       .then((res) => {
         if (res.status === true) {
+          token.getApprovedAmount(w3, token.farmAddress);
           toast.success("Successfully approved.");
           this.setState({ isApproved: true });
         }
@@ -154,16 +156,39 @@ export default class Pool extends Component {
   };
 
   onDepositChange = (e) => {
-    this.setState({ toDeposit: e.target.value });
+	let depositable = BigNumber(
+      convertToETH(this.props.token.depositable, this.props.token.unit)
+    ).toNumber();
+
+    let toDeposit =
+      BigNumber(e.target.value).toNumber() > depositable
+        ? depositable
+        : BigNumber(e.target.value).toNumber();
+
+    this.setState({ toDeposit: isNaN(toDeposit) ? "" : toDeposit });
   };
 
   onWithdrawChange = (e) => {
-    this.setState({ toWithdraw: e.target.value });
+    let deposited = BigNumber(
+      convertToETH(this.props.token.deposited, this.props.token.unit)
+    ).toNumber();
+
+    let toWithdraw =
+      BigNumber(e.target.value).toNumber() > deposited
+        ? deposited
+        : BigNumber(e.target.value).toNumber();
+
+    this.setState({ toWithdraw: isNaN(toWithdraw) ? "" : toWithdraw });
   };
 
   render() {
     const { token, isConnected } = this.props;
     const { isExpanded, toDeposit, toWithdraw, isApproved } = this.state;
+
+    const approved = this.props.w3?.web3?.utils.fromWei(
+      token.approved.toString()
+    );
+    const currApproved = approved !== undefined ? approved : "-";
 
     return (
       <div
@@ -217,7 +242,8 @@ export default class Pool extends Component {
                 isConnected={isConnected}
                 isApproved={isApproved}
                 isDeposit={true}
-                subtitle={"Deposit Fee: 2%"}
+                subtitle={"Approved: " + currApproved + ", Deposit Fee: 2%"}
+                valueApproved={token.approved}
               />
               <InputField
                 title={"Staked in contract"}
