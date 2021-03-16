@@ -1,4 +1,5 @@
 import Logo from "../../assets/logos/governor-plain.png";
+import WBTC from "../../assets/coins/wbtc.png";
 import WETH from "../../assets/coins/weth.png";
 import UNI from "../../assets/coins/uni.png";
 import LINK from "../../assets/coins/link.png";
@@ -12,6 +13,15 @@ export const testpools = [
     address: "0xb354b410071a12b5ccb28bd3275a44c6dc9dbc61",
     lpAddress: "0xb354b410071a12b5ccB28Bd3275A44C6Dc9DBC61",
     pid: "0",
+  },
+  {
+    logo: WBTC,
+    name: "WBTC",
+    text: "Wrapped Bitcoin",
+    unit: "WBTC",
+    address: "0x577D296678535e4903D59A4C929B718e1D575e0A",
+    lpAddress: "0x937959382d811bd84463b3d1d221fa093930dd05",
+    pid: "1",
   },
   {
     logo: WETH,

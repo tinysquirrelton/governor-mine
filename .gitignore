@@ -25,3 +25,6 @@ Temporary Items
 
 # Production
 /build
+
+# Local Netlify folder
+.netlify

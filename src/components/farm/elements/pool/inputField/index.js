@@ -14,6 +14,7 @@ export const InputField = ({
   isConnected,
   isApproved,
   valueApproved,
+  tokenDecimals,
   subtitle,
   subtitleForceNormalStyle,
   isDeposit,
@@ -59,7 +60,7 @@ export const InputField = ({
           (isDeposit &&
             (!valueApproved ||
               BigNumber(valueApproved).toNumber() >
-                BigNumber(value * 10 ** 18).toNumber()))
+                BigNumber(value * 10 ** tokenDecimals).toNumber()))
         }
       >
         Approve
@@ -78,7 +79,7 @@ export const InputField = ({
             (BigNumber(valueApproved).toNumber() <= 0 ||
               !valueApproved ||
               BigNumber(valueApproved).toNumber() <
-                BigNumber(value * 10 ** 18).toNumber()))
+                BigNumber(value * 10 ** tokenDecimals).toNumber()))
         }
       >{`${buttonTitle} ${unit}`}</button>
     </div>
