@@ -185,9 +185,19 @@ export default class Pool extends Component {
     const { token, isConnected } = this.props;
     const { isExpanded, toDeposit, toWithdraw, isApproved } = this.state;
 
-    const approved = this.props.w3?.web3?.utils.fromWei(
-      token.approved.toString()
-    );
+	let approved = 0;
+	let decimals = 18;
+	
+    if (this.props.token.unit === "USDC") {
+      approved = Math.floor(token.approved / 100) / 10 ** 4;
+	  decimals = 6;
+    } else if (this.props.token.unit === "WBTC") {
+      approved = Math.floor(token.approved / 100) / 10 ** 6;
+	  decimals = 8;
+    } else {
+      approved = Math.floor(token.approved / 10 ** 12) / 10 ** 6;
+    }
+
     const currApproved = approved !== undefined ? approved : "-";
 
     return (
@@ -244,6 +254,7 @@ export default class Pool extends Component {
                 isDeposit={true}
                 subtitle={"Approved: " + currApproved + ", Deposit Fee: 2%"}
                 valueApproved={token.approved}
+                tokenDecimals={decimals}
               />
               <InputField
                 title={"Staked in contract"}
