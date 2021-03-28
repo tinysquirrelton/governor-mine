@@ -128,13 +128,13 @@ export default class Pool extends Component {
   };
 
   onDepositExecute = () => {
-    const { w3, token, farmContract } = this.props;
+    const { token, farmContract } = this.props;
     const tD = this.state.toDeposit;
     let d = this.onConvert(tD);
 
     farmContract.methods
       .deposit(token.pid, d)
-      .send({ from: w3.address })
+      .send({ from: this.props.walletconnect?.account })
       .then((res) => {
         toast.success("Successfully deposited.");
         this.setState(() => ({
@@ -145,13 +145,13 @@ export default class Pool extends Component {
   };
 
   onWithdrawExcecute = () => {
-    const { w3, token, farmContract } = this.props;
+    const { token, farmContract } = this.props;
     const tW = this.state.toWithdraw;
     let w = this.onConvert(tW);
 
     farmContract.methods
       .withdraw(token.pid, w)
-      .send({ from: w3.address })
+      .send({ from: this.props.walletconnect?.account })
       .then((res) => {
         toast.success("Successfully withdrawn.");
         this.setState(() => ({
@@ -162,10 +162,10 @@ export default class Pool extends Component {
   };
 
   onClaim = () => {
-    const { w3, token, farmContract } = this.props;
+    const { token, farmContract } = this.props;
     farmContract.methods
       .deposit(token.pid, 0)
-      .send({ from: w3.address })
+      .send({ from: this.props.walletconnect?.account })
       .then((res) => {
         toast.success("Rewards claimed.");
         token.rewards = null;
