@@ -21,7 +21,7 @@ export const roundValue = (v) => {
       if (v === 0) {
         return v;
       } else {
-        return Number(v.toFixed(2)).toLocaleString()
+        return Number(v.toFixed(2)).toLocaleString();
       }
     } else {
       return null;
@@ -31,19 +31,15 @@ export const roundValue = (v) => {
   }
 };
 
-export const convertToETH = (v,name) => {
-
+export const convertToETH = (v, name) => {
   let number;
-  if (name === 'USDC') {
-
-    number = ( v / (10**6) ).toFixed(5)
-  } else if (name === 'WBTC') {
-
-    number = ( v / (10**8) ).toFixed(5)
+  if (name === "USDC") {
+    number = (v / 10 ** 6).toFixed(5);
+  } else if (name === "WBTC") {
+    number = (v / 10 ** 8).toFixed(5);
   } else {
-
-    number = ( v / (10**18) ).toFixed(5)
+    number = (v / 10 ** 18).toFixed(5);
   }
 
   return number;
-}
+};

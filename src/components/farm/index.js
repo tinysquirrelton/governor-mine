@@ -54,11 +54,18 @@ export default class Farm extends Component {
         <div className="farm-container">
           <div className="farm-title">
             <div className="title-text">GDAO Mine</div>
-            <ConnectButton w3={this.props.w3} />
+            <ConnectButton
+              account={this.props.walletconnect?.account}
+              setConnection={this.props.walletconnect?.connectWeb3Manual}
+            />
           </div>
           <div className="farm-subtitle">
             <span>TVL:</span>
-            {`${this.props.isConnected ? ` $${roundValue(tvl)}` : " -"}`}
+            {`${
+              this.props.walletconnect?.isConnected
+                ? ` $${roundValue(tvl)}`
+                : " -"
+            }`}
           </div>
           <div className="farm-subtitle">
             <span>Circulating Supply:</span>

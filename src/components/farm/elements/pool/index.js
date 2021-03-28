@@ -44,12 +44,12 @@ export default class Pool extends Component {
   onConvert = (n) => {
     if (this.props.token.unit === "WBTC") {
       n = Math.floor(n * 10 ** 7) / 10 ** 5;
-      return this.props.w3.web3.utils.toWei(n.toString(), "mwei");
+      return this.props.w3.utils.toWei(n.toString(), "mwei");
     } else if (this.props.token.unit === "USDC") {
       n = Math.floor(n * 10 ** 5) / 10 ** 5;
-      return this.props.w3.web3.utils.toWei(n.toString(), "mwei");
+      return this.props.w3.utils.toWei(n.toString(), "mwei");
     } else {
-      return this.props.w3.web3.utils.toWei(n.toString());
+      return this.props.w3.utils.toWei(n.toString());
     }
   };
 
@@ -97,10 +97,15 @@ export default class Pool extends Component {
 
     token.contract.methods
       .approve(farmContract._address, uB)
-      .send({ from: w3.address })
+      .send({ from: this.props.walletconnect?.account })
       .then((res) => {
         if (res.status === true) {
-          token.getApprovedAmount(w3, token.farmAddress);
+          token.getApprovedAmount(
+            w3,
+            token.address,
+            token.farmAddress,
+            this.props.walletconnect?.account
+          );
           toast.success("Successfully approved.");
           this.setState({ isApproved: true });
         }
@@ -156,7 +161,7 @@ export default class Pool extends Component {
   };
 
   onDepositChange = (e) => {
-	let depositable = BigNumber(
+    let depositable = BigNumber(
       convertToETH(this.props.token.depositable, this.props.token.unit)
     ).toNumber();
 
@@ -182,18 +187,18 @@ export default class Pool extends Component {
   };
 
   render() {
-    const { token, isConnected } = this.props;
+    const { token, walletconnect } = this.props;
     const { isExpanded, toDeposit, toWithdraw, isApproved } = this.state;
 
-	let approved = 0;
-	let decimals = 18;
-	
+    let approved = 0;
+    let decimals = 18;
+
     if (this.props.token.unit === "USDC") {
       approved = Math.floor(token.approved / 100) / 10 ** 4;
-	  decimals = 6;
+      decimals = 6;
     } else if (this.props.token.unit === "WBTC") {
       approved = Math.floor(token.approved / 100) / 10 ** 6;
-	  decimals = 8;
+      decimals = 8;
     } else {
       approved = Math.floor(token.approved / 10 ** 12) / 10 ** 6;
     }
@@ -211,14 +216,14 @@ export default class Pool extends Component {
             token={token}
             toggleExpand={this.toggleExpand}
             isExpanded={isExpanded}
-            isConnected={isConnected}
+            isConnected={walletconnect?.isConnected}
           />
         ) : (
           <Row
             token={token}
             toggleExpand={this.toggleExpand}
             isExpanded={isExpanded}
-            isConnected={isConnected}
+            isConnected={walletconnect?.isConnected}
           />
         )}
         {isExpanded && (
@@ -230,12 +235,12 @@ export default class Pool extends Component {
                 v={`${convertToETH(token.deposited, this.props.token.unit)} ${
                   token.unit
                 }`}
-                isConnected={isConnected}
+                isConnected={walletconnect?.isConnected}
               />
               <Statistics
                 t={"Claimable Rewards"}
                 v={`${roundValue(token.rewards)} GDAO`}
-                isConnected={isConnected}
+                isConnected={walletconnect?.isConnected}
               />
             </div>
             <div className="fields">
@@ -249,7 +254,7 @@ export default class Pool extends Component {
                 value={toDeposit}
                 onChange={(e) => this.onDepositChange(e)}
                 buttonTitle={"Deposit"}
-                isConnected={isConnected}
+                isConnected={walletconnect?.isConnected}
                 isApproved={isApproved}
                 isDeposit={true}
                 subtitle={"Approved: " + currApproved + ", Deposit Fee: 2%"}
@@ -265,7 +270,7 @@ export default class Pool extends Component {
                 value={toWithdraw}
                 onChange={(e) => this.onWithdrawChange(e)}
                 buttonTitle={"Withdraw"}
-                isConnected={isConnected}
+                isConnected={walletconnect?.isConnected}
                 isDeposit={false}
                 subtitle={"Withdraw and claim rewards"}
               />
@@ -273,12 +278,12 @@ export default class Pool extends Component {
             <div className="claims">
               <div className="title">Available rewards:</div>
               <div className="value">{`${
-                isConnected ? roundValue(token.rewards) : "-"
+                walletconnect?.isConnected ? roundValue(token.rewards) : "-"
               } GDAO`}</div>
               <button
                 className="claim-btn"
                 onClick={this.onClaim}
-                disabled={!isConnected}
+                disabled={!walletconnect?.isConnected}
               >
                 Claim Rewards
               </button>

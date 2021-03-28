@@ -9,7 +9,6 @@ import {
   farmAddress,
 } from "../../utilities/constants/constants";
 
-
 export default class Token {
   constructor(address, lpAddress, name, text, unit, logo, pid) {
     this.address = address;
@@ -33,32 +32,39 @@ export default class Token {
     this.approved = 0;
   }
 
-  async getContract(w3) {
-    if (w3.isAddressValid(this.address)) {
-      this.contract = await new w3.web3.eth.Contract(ERC20.abi, this.address);
+  async getContract(web3) {
+    if (web3?.utils.isAddress(this.address)) {
+      this.contract = await new web3.eth.Contract(ERC20.abi, this.address);
     }
   }
 
-  async getLPContract(w3) {
-    if (w3.isAddressValid(this.lpAddress)) {
-      this.lpContract = await new w3.web3.eth.Contract(
-        ERC20.abi,
-        this.lpAddress
-      );
+  async getLPContract(web3) {
+    if (web3?.utils.isAddress(this.address)) {
+      this.lpContract = await new web3.eth.Contract(ERC20.abi, this.lpAddress);
     }
   }
 
-  async getPrice(w3, wethContract, usdcContract) {
-    if (w3.isAddressValid(this.lpAddress)) {
+  getWeiToETH(web3, balance) {
+    return BigNumber(web3.utils.fromWei(balance, "ether")).toNumber();
+  }
+
+  getWeiToETHString(web3, balance) {
+    return BigNumber(web3.utils.fromWei(balance, "ether")).toString(10);
+  }
+
+  //////
+
+  async getPrice(web3, wethContract, usdcContract) {
+    if (web3?.utils.isAddress(this.lpAddress)) {
       let p;
       let xB;
       let w = await wethContract.methods.balanceOf(this.lpAddress).call();
-      let wB = await w3.getWeiToETH(w);
+      let wB = await this.getWeiToETH(web3, w);
 
       if (this.name === "GDAO / ETH") {
         let wB2x = wB * 2; // 2x number of WETH in (GDAO-WETH)
         let tS = await this.lpContract.methods.totalSupply().call(); // Total Supply of (GDAO-WETH)
-        let tSB = await w3.getWeiToETH(tS);
+        let tSB = await this.getWeiToETH(web3, tS);
         p = wB2x / tSB; // Price in ETH
       } else {
         let x = await this.contract.methods.balanceOf(this.lpAddress).call();
@@ -70,7 +76,7 @@ export default class Token {
         } else if (this.name === "WBTC") {
           xB = x / 10 ** 8;
         } else {
-          xB = await w3.getWeiToETH(x);
+          xB = await this.getWeiToETH(web3, x);
         }
         p = wB / xB; // Price in ETH
       }
@@ -79,7 +85,7 @@ export default class Token {
         this.price = p * 650;
       } else {
         let i = await wethContract.methods.balanceOf(USDCWETHAddress).call();
-        let iB = await w3.getWeiToETH(i);
+        let iB = await this.getWeiToETH(web3, i);
         let j = BigNumber(
           await usdcContract.methods.balanceOf(USDCWETHAddress).call()
         ).toNumber();
@@ -90,10 +96,14 @@ export default class Token {
     }
   }
 
-  async getAPY(w3, wethContract, usdcContract) {
-    if (w3.isAddressValid(this.address)) {
+  async getAPY(web3, wethContract, usdcContract) {
+    if (web3?.utils.isAddress(this.address)) {
       let bB;
-      const gdaoPrice = await this.getGDAOPrice(w3, wethContract, usdcContract);
+      const gdaoPrice = await this.getGDAOPrice(
+        web3,
+        wethContract,
+        usdcContract
+      );
       const xBy = this.name === "GDAO / ETH" ? 400000 : 100000;
       let b = await this.contract.methods.balanceOf(farmAddress).call();
 
@@ -105,7 +115,7 @@ export default class Token {
       } else if (this.name === "WBTC") {
         bB = b / 10 ** 8;
       } else {
-        bB = await w3.getWeiToETH(b);
+        bB = await this.getWeiToETH(web3, b);
       }
 
       let n = gdaoPrice * xBy;
@@ -114,20 +124,20 @@ export default class Token {
     }
   }
 
-  async getGDAOPrice(w3, wethContract, usdcContract) {
+  async getGDAOPrice(web3, wethContract, usdcContract) {
     let w = await wethContract.methods.balanceOf(GDAOWETHLPAddress).call();
-    let wB = await w3.getWeiToETH(w);
+    let wB = await this.getWeiToETH(web3, w);
 
-    let GDAOContract = await new w3.web3.eth.Contract(ERC20.abi, GDAOAddress);
+    let GDAOContract = await new web3.eth.Contract(ERC20.abi, GDAOAddress);
     let g = await GDAOContract.methods.balanceOf(GDAOWETHLPAddress).call();
-    let gB = await w3.getWeiToETH(g);
+    let gB = await this.getWeiToETH(web3, g);
     let p = wB / gB; // Price in ETH
 
     if (testnet) {
       return p * 650;
     } else {
       let i = await wethContract.methods.balanceOf(USDCWETHAddress).call();
-      let iB = await w3.getWeiToETH(i);
+      let iB = await this.getWeiToETH(web3, i);
       let j = BigNumber(
         await usdcContract.methods.balanceOf(USDCWETHAddress).call()
       ).toNumber();
@@ -138,8 +148,8 @@ export default class Token {
     }
   }
 
-  async getTVL(w3) {
-    if (w3.isAddressValid(this.address)) {
+  async getTVL(web3) {
+    if (web3?.utils.isAddress(this.address)) {
       let bB;
       let b = await this.contract.methods.balanceOf(farmAddress).call();
       if (("USDC", "WBTC".includes(this.name))) {
@@ -150,30 +160,30 @@ export default class Token {
       } else if (this.name === "WBTC") {
         bB = b / 10 ** 8;
       } else {
-        bB = await w3.getWeiToETH(b);
+        bB = await this.getWeiToETH(web3, b);
       }
-      this.tvl = (bB * this.price);
+      this.tvl = bB * this.price;
     }
   }
 
-  async getDepositable(w3) {
-    if (w3.isAddressValid() && w3.isAddressValid(this.address)) {
-      let b = await this.contract.methods.balanceOf(w3.address).call();
+  async getDepositable(web3, account) {
+    if (web3?.utils.isAddress(account) && web3?.utils.isAddress(this.address)) {
+      let b = await this.contract.methods.balanceOf(account).call();
       // let bB;
       // if (this.name === "USDC") {
       //   bB = b / 10 ** 6;
       // } else if (this.name === "WBTC") {
       //   bB = b / 10 ** 8;
       // } else {
-      //   bB = await w3.getWeiToETH(b.toString());
+      //   bB = await this.getWeiToETH(web3, b.toString());
       // }
       this.depositable = b;
     }
   }
 
-  async getDeposited(w3, farmContract) {
-    if (w3.isAddressValid()) {
-      let b = await farmContract.methods.userInfo(this.pid, w3.address).call();
+  async getDeposited(web3, farmContract, account) {
+    if (web3?.utils.isAddress(account)) {
+      let b = await farmContract.methods.userInfo(this.pid, account).call();
       //let bB;
       // if (this.name === "USDC") {
       //   bB = b.amount / 10 ** 6;
@@ -186,20 +196,20 @@ export default class Token {
     }
   }
 
-  async getPendingGDAO(w3, farmContract) {
-    if (w3.isAddressValid()) {
-      let b = await farmContract.methods
-        .pendingGDAO(this.pid, w3.address)
-        .call();
-      this.rewards = await w3.getWeiToETH(b);
+  async getPendingGDAO(web3, farmContract, account) {
+    if (web3?.utils.isAddress(account)) {
+      let b = await farmContract.methods.pendingGDAO(this.pid, account).call();
+      this.rewards = await this.getWeiToETH(web3, b);
     }
   }
 
-  async getApprovedAmount(w3, tokenAddress, farmAddress) {
-    if (w3.isAddressValid()) {
-	  let GDAOContract = await new w3.web3.eth.Contract(ERC20.abi, tokenAddress);
-	  let allowance = await GDAOContract.methods.allowance(w3.address, farmAddress).call();
-	  this.approved = allowance;
+  async getApprovedAmount(web3, tokenAddress, farmAddress, account) {
+    if (web3?.utils.isAddress(account)) {
+      let GDAOContract = await new web3.eth.Contract(ERC20.abi, tokenAddress);
+      let allowance = await GDAOContract.methods
+        .allowance(account, farmAddress)
+        .call();
+      this.approved = allowance;
     }
   }
 }

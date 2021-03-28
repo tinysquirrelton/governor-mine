@@ -45,6 +45,12 @@ export default class App extends Component {
     );
     await this.walletconnect.connectWeb3();
     this.web3 = await this.walletconnect.getWeb3();
+
+    this.getMineStats();
+    let self = this;
+    this.statsInterval = setInterval(function () {
+      self.getMineStats();
+    }, 5000);
   }
 
   onConnect = async (web3) => {
@@ -69,22 +75,6 @@ export default class App extends Component {
     await this.getCirculatingSupply();
   };
 
-  onConnect = async (web3) => {
-    const tasks = this.tokens.map(async (token) => {
-      await token.getContract(web3);
-      await token.getLPContract(web3);
-      await token.getPrice(web3, this.wethContract, this.usdcContract);
-      await token.getAPY(web3, this.wethContract, this.usdcContract);
-      await token.getTVL(web3);
-      await token.getDepositable(web3);
-      await token.getDeposited(web3, this.farmContract);
-      await token.getPendingGDAO(web3, this.farmContract);
-      await token.getApprovedAmount(web3, token.address, farmAddress);
-    });
-    await Promise.all(tasks);
-    this.setState({});
-  };
-
   onResetConnect = () => {
     this.tokens.forEach((token) => {
       token.depositable = null;
@@ -92,6 +82,40 @@ export default class App extends Component {
       token.rewards = null;
     });
     this.setState({});
+  };
+
+  getMineStats = async () => {
+    if (
+      this.web3 != null &&
+      this.walletconnect?.account != null &&
+      this.web3?.utils.isAddress(this.walletconnect?.account)
+    ) {
+      let account = this.walletconnect?.account;
+      const tasks = this.tokens.map(async (token) => {
+        if (token.contract === null) {
+          await token.getContract(this.web3);
+        }
+        if (token.lpContract === null) {
+          await token.getLPContract(this.web3);
+        }
+        await token.getPrice(this.web3, this.wethContract, this.usdcContract);
+        await token.getAPY(this.web3, this.wethContract, this.usdcContract);
+        await token.getTVL(this.web3);
+        if (this.walletconnect?.isConnected && this.farmContract !== null) {
+          await token.getDepositable(this.web3, account);
+          await token.getDeposited(this.web3, this.farmContract, account);
+          await token.getPendingGDAO(this.web3, this.farmContract, account);
+          await token.getApprovedAmount(
+            this.web3,
+            token.address,
+            farmAddress,
+            account
+          );
+        }
+      });
+      await Promise.all(tasks);
+      this.setState({});
+    }
   };
 
   getTokens = () => {
@@ -146,6 +170,20 @@ export default class App extends Component {
     this.setState({ circulatingSupply: circSupply });
   };
 
+  getTokenValues = async (token) => {
+    let account = this.walletconnect?.account;
+    await token.getDepositable(this.web3, account);
+    await token.getDeposited(this.web3, this.farmContract, account);
+    await token.getPendingGDAO(this.web3, this.farmContract, account);
+    await token.getApprovedAmount(
+      this.web3,
+      token.address,
+      farmAddress,
+      account
+    );
+    this.setState({});
+  };
+
   render() {
     return (
       <>
@@ -160,10 +198,10 @@ export default class App extends Component {
         <Routes
           w3={this.web3}
           tokens={this.tokens}
+          getTokenValues={this.getTokenValues}
           circulatingSupply={this.circulatingSupply}
           farmContract={this.farmContract}
           walletconnect={this.walletconnect}
-          // isConnected={this.state.isConnected}
         />
       </>
     );
