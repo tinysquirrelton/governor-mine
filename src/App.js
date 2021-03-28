@@ -2,11 +2,13 @@ import React, { Component } from "react";
 import Routes from "./routes";
 import { ToastContainer } from "react-toastify";
 import { X } from "react-feather";
-import W3C from "./data/web3/class";
 import Token from "./data/token/class";
 import { pools } from "./utilities/constants/constants";
 import ERC20 from "./data/token/abi/ERC20.json";
 import FarmABI from "./data/token/abi/FarmABI.json";
+import BigNumber from "bignumber.js/bignumber";
+
+import WalletConnect from "./governor-common/components/walletconnect/WalletConnect";
 
 import {
   wETHAddress,
@@ -17,64 +19,103 @@ import {
   MinesAddress,
   AirdropRewardAddresss,
   BurnPurgatoryAddress,
-  testnet,
 } from "./utilities/constants/constants";
 
 const Close = ({ closeToast }) => <X size={20} onClick={closeToast} />;
+BigNumber.config({ DECIMAL_PLACES: 4 });
 
 export default class App extends Component {
   constructor(props) {
     super(props);
-    this.w3 = new W3C();
     this.tokens = this.getTokens();
     this.wethContract = null;
     this.usdcContract = null;
     this.farmContract = null;
-    this.circulatingSupply = 0;
-    this.state = { isConnected: false };
+    this.state = {
+      circulatingSupply: 0,
+    };
+    this.walletconnect = null;
+    this.web3 = null;
   }
 
   async componentDidMount() {
-    let chainId;
+    this.walletconnect = await new WalletConnect(
+      this.onConnect,
+      this.onResetConnect
+    );
+    await this.walletconnect.connectWeb3();
+    this.web3 = await this.walletconnect.getWeb3();
 
-    // Init Web3
-    const isConnected = await this.w3.setConnection();
-    this.w3.onAccountChange(this.setChanged);
-    this.w3.onNetworkChange();
+    this.getMineStats();
+    let self = this;
+    this.statsInterval = setInterval(function () {
+      self.getMineStats();
+    }, 5000);
+  }
 
-    // Get contracts to derive from
-    if (this.w3.web3 !== null) {
-      this.wethContract = this.getContract(this.w3, wETHAddress);
-      this.usdcContract = this.getContract(this.w3, USDCAddress);
-      this.gdaoContract = this.getContract(this.w3, GDAOAddress);
-      this.farmContract = this.getContractFarm(this.w3, farmAddress);
-      // Init Token Contracts if Mainnet or Test-mode enabled
-      chainId = await this.w3.web3.eth.getChainId();
-      // Calculate circulating supply
-      this.circulatingSupply = this.getCirculatingSupply();
-    }
+  onConnect = async (web3) => {
+    const cAddresses = [wETHAddress, USDCAddress, GDAOAddress, farmAddress];
 
+    const [wethC, ussdcC, gdaoC, farmC] = await Promise.all(
+      cAddresses.map(async (c) => {
+        let contract;
+        if (c !== farmAddress) {
+          contract = await this.getContract(web3, c);
+        } else {
+          contract = await this.getContractFarm(web3, c);
+        }
+        return contract;
+      })
+    );
+
+    this.wethContract = wethC;
+    this.usdcContract = ussdcC;
+    this.gdaoContract = gdaoC;
+    this.farmContract = await farmC;
+    await this.getCirculatingSupply();
+  };
+
+  onResetConnect = () => {
+    this.tokens.forEach((token) => {
+      token.depositable = null;
+      token.deposited = null;
+      token.rewards = null;
+    });
+    this.setState({});
+  };
+
+  getMineStats = async () => {
     if (
-      chainId === 1 ||
-      (testnet && this.wethContract !== null && this.usdcContract !== null)
+      this.web3 != null &&
+      this.walletconnect?.account != null &&
+      this.web3?.utils.isAddress(this.walletconnect?.account)
     ) {
+      let account = this.walletconnect?.account;
       const tasks = this.tokens.map(async (token) => {
-        await token.getContract(this.w3);
-        await token.getLPContract(this.w3);
-        await token.getPrice(this.w3, this.wethContract, this.usdcContract);
-        await token.getAPY(this.w3, this.wethContract, this.usdcContract);
-        await token.getTVL(this.w3);
-        if (isConnected && this.farmContract !== null) {
-          await token.getDepositable(this.w3);
-          await token.getDeposited(this.w3, this.farmContract);
-          await token.getPendingGDAO(this.w3, this.farmContract);
-          await token.getApprovedAmount(this.w3, token.address, farmAddress);
+        if (token.contract === null) {
+          await token.getContract(this.web3);
+        }
+        if (token.lpContract === null) {
+          await token.getLPContract(this.web3);
+        }
+        await token.getPrice(this.web3, this.wethContract, this.usdcContract);
+        await token.getAPY(this.web3, this.wethContract, this.usdcContract);
+        await token.getTVL(this.web3);
+        if (this.walletconnect?.isConnected && this.farmContract !== null) {
+          await token.getDepositable(this.web3, account);
+          await token.getDeposited(this.web3, this.farmContract, account);
+          await token.getPendingGDAO(this.web3, this.farmContract, account);
+          await token.getApprovedAmount(
+            this.web3,
+            token.address,
+            farmAddress,
+            account
+          );
         }
       });
       await Promise.all(tasks);
-      this.setState({ isConnected: isConnected });
     }
-  }
+  };
 
   getTokens = () => {
     return pools.map(
@@ -91,12 +132,12 @@ export default class App extends Component {
     );
   };
 
-  getContract = (w3, address) => {
-    return new w3.web3.eth.Contract(ERC20.abi, address);
+  getContract = (web3, address) => {
+    return new web3.eth.Contract(ERC20.abi, address);
   };
 
-  getContractFarm = (w3, address) => {
-    return new w3.web3.eth.Contract(FarmABI.abi, address);
+  getContractFarm = (web3, address) => {
+    return new web3.eth.Contract(FarmABI.abi, address);
   };
 
   getCirculatingSupply = async () => {
@@ -116,7 +157,7 @@ export default class App extends Component {
     let burnPurgatoryBalance =
       (await this.gdaoContract.methods.balanceOf(BurnPurgatoryAddress).call()) /
       10 ** 18;
-    this.circulatingSupply = Number(
+    let circSupply = Number(
       (
         totalSupply -
         airdropUnclaimed -
@@ -125,27 +166,21 @@ export default class App extends Component {
         burnPurgatoryBalance
       ).toFixed(0)
     ).toLocaleString();
+    this.setState({ circulatingSupply: circSupply });
   };
 
-  setChanged = async (changeType) => {
-    if (changeType === "DISCONNECTED") {
-      this.tokens.forEach((token) => {
-        token.depositable = null;
-        token.deposited = null;
-        token.rewards = null;
-      });
-      this.setState({ isConnected: false });
-    } else if (changeType === "CHANGED_ACCOUNT") {
-      const tasks = this.tokens.map(async (token) => {
-        await token.getDepositable(this.w3);
-        await token.getDeposited(this.w3, this.farmContract);
-        await token.getPendingGDAO(this.w3, this.farmContract);
-        await token.getApprovedAmount(this.w3, token.address, farmAddress);
-		console.log(token.approved);
-      });
-      await Promise.all(tasks);
-      this.setState({ isConnected: true });
-    }
+  getTokenValues = async (token) => {
+    let account = this.walletconnect?.account;
+    await token.getDepositable(this.web3, account);
+    await token.getDeposited(this.web3, this.farmContract, account);
+    await token.getPendingGDAO(this.web3, this.farmContract, account);
+    await token.getApprovedAmount(
+      this.web3,
+      token.address,
+      farmAddress,
+      account
+    );
+    this.setState({});
   };
 
   render() {
@@ -160,14 +195,13 @@ export default class App extends Component {
           draggablePercent={25}
         />
         <Routes
-          w3={this.w3}
+          w3={this.web3}
           tokens={this.tokens}
-          circulatingSupply={this.circulatingSupply}
+          getTokenValues={this.getTokenValues}
+          getMineStats={this.getMineStats}
+          circulatingSupply={this.state.circulatingSupply}
           farmContract={this.farmContract}
-          isConnected={this.state.isConnected}
-          isSmall={this.state.isSmall}
-          isMedium={this.state.isMedium}
-          isLarge={this.state.isLarge}
+          walletconnect={this.walletconnect}
         />
       </>
     );
