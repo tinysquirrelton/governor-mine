@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import Routes from "./routes";
 import { ToastContainer } from "react-toastify";
 import { X } from "react-feather";
-import W3C from "./data/web3/class";
 import Token from "./data/token/class";
 import { pools } from "./utilities/constants/constants";
 import ERC20 from "./data/token/abi/ERC20.json";
@@ -20,7 +19,6 @@ import {
   MinesAddress,
   AirdropRewardAddresss,
   BurnPurgatoryAddress,
-  testnet,
 } from "./utilities/constants/constants";
 
 const Close = ({ closeToast }) => <X size={20} onClick={closeToast} />;
@@ -41,47 +39,43 @@ export default class App extends Component {
   }
 
   async componentDidMount() {
-    let chainId;
-
-    // Init Web3
-    const isConnected = await this.w3.setConnection();
-
-    // Get contracts to derive from
-    if (this.w3.web3 !== null) {
-      this.wethContract = this.getContract(this.w3, wETHAddress);
-      this.usdcContract = this.getContract(this.w3, USDCAddress);
-      this.gdaoContract = this.getContract(this.w3, GDAOAddress);
-      this.farmContract = this.getContractFarm(this.w3, farmAddress);
-      // Init Token Contracts if Mainnet or Test-mode enabled
-      chainId = await this.w3.web3.eth.getChainId();
-      // Calculate circulating supply
-      this.getCirculatingSupply();
-    }
-
-    if (
-      chainId === 1 ||
-      (testnet && this.wethContract !== null && this.usdcContract !== null)
-    ) {
-      const tasks = this.tokens.map(async (token) => {
-        await token.getContract(this.w3);
-        await token.getLPContract(this.w3);
-        await token.getPrice(this.w3, this.wethContract, this.usdcContract);
-        await token.getAPY(this.w3, this.wethContract, this.usdcContract);
-        await token.getTVL(this.w3);
-        if (isConnected && this.farmContract !== null) {
-          await token.getDepositable(this.w3);
-          await token.getDeposited(this.w3, this.farmContract);
-          await token.getPendingGDAO(this.w3, this.farmContract);
-          await token.getApprovedAmount(this.w3, token.address, farmAddress);
-        }
-      });
-      await Promise.all(tasks);
-      this.setState({ isConnected: isConnected });
-    }
+    this.walletconnect = await new WalletConnect(
+      this.onConnect,
+      this.onResetConnect
+    );
+    await this.walletconnect.connectWeb3();
+    this.web3 = await this.walletconnect.getWeb3();
   }
 
   onConnect = async (web3) => {
+    const cAddresses = [wETHAddress, USDCAddress, GDAOAddress, farmAddress];
+
+    const [wethC, ussdcC, gdaoC, farmC] = await Promise.all(
+      cAddresses.map(async (c) => {
+        let contract;
+        if (c !== farmAddress) {
+          contract = await this.getContract(web3, c);
+        } else {
+          contract = await this.getContractFarm(web3, c);
+        }
+        return contract;
+      })
+    );
+
+    this.wethContract = wethC;
+    this.usdcContract = ussdcC;
+    this.gdaoContract = gdaoC;
+    this.farmContract = await farmC;
+    await this.getCirculatingSupply();
+  };
+
+  onConnect = async (web3) => {
     const tasks = this.tokens.map(async (token) => {
+      await token.getContract(web3);
+      await token.getLPContract(web3);
+      await token.getPrice(web3, this.wethContract, this.usdcContract);
+      await token.getAPY(web3, this.wethContract, this.usdcContract);
+      await token.getTVL(web3);
       await token.getDepositable(web3);
       await token.getDeposited(web3, this.farmContract);
       await token.getPendingGDAO(web3, this.farmContract);
