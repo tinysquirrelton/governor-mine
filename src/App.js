@@ -7,6 +7,9 @@ import Token from "./data/token/class";
 import { pools } from "./utilities/constants/constants";
 import ERC20 from "./data/token/abi/ERC20.json";
 import FarmABI from "./data/token/abi/FarmABI.json";
+import BigNumber from "bignumber.js/bignumber";
+
+import WalletConnect from "./governor-common/components/walletconnect/WalletConnect";
 
 import {
   wETHAddress,
@@ -21,17 +24,20 @@ import {
 } from "./utilities/constants/constants";
 
 const Close = ({ closeToast }) => <X size={20} onClick={closeToast} />;
+BigNumber.config({ DECIMAL_PLACES: 4 });
 
 export default class App extends Component {
   constructor(props) {
     super(props);
-    this.w3 = new W3C();
     this.tokens = this.getTokens();
     this.wethContract = null;
     this.usdcContract = null;
     this.farmContract = null;
-    this.circulatingSupply = 0;
-    this.state = { isConnected: false };
+    this.state = {
+      circulatingSupply: 0,
+    };
+    this.walletconnect = null;
+    this.web3 = null;
   }
 
   async componentDidMount() {
@@ -39,8 +45,6 @@ export default class App extends Component {
 
     // Init Web3
     const isConnected = await this.w3.setConnection();
-    this.w3.onAccountChange(this.setChanged);
-    this.w3.onNetworkChange();
 
     // Get contracts to derive from
     if (this.w3.web3 !== null) {
@@ -51,7 +55,7 @@ export default class App extends Component {
       // Init Token Contracts if Mainnet or Test-mode enabled
       chainId = await this.w3.web3.eth.getChainId();
       // Calculate circulating supply
-      this.circulatingSupply = this.getCirculatingSupply();
+      this.getCirculatingSupply();
     }
 
     if (
@@ -76,6 +80,26 @@ export default class App extends Component {
     }
   }
 
+  onConnect = async (web3) => {
+    const tasks = this.tokens.map(async (token) => {
+      await token.getDepositable(web3);
+      await token.getDeposited(web3, this.farmContract);
+      await token.getPendingGDAO(web3, this.farmContract);
+      await token.getApprovedAmount(web3, token.address, farmAddress);
+    });
+    await Promise.all(tasks);
+    this.setState({});
+  };
+
+  onResetConnect = () => {
+    this.tokens.forEach((token) => {
+      token.depositable = null;
+      token.deposited = null;
+      token.rewards = null;
+    });
+    this.setState({});
+  };
+
   getTokens = () => {
     return pools.map(
       (pool) =>
@@ -91,12 +115,12 @@ export default class App extends Component {
     );
   };
 
-  getContract = (w3, address) => {
-    return new w3.web3.eth.Contract(ERC20.abi, address);
+  getContract = (web3, address) => {
+    return new web3.eth.Contract(ERC20.abi, address);
   };
 
-  getContractFarm = (w3, address) => {
-    return new w3.web3.eth.Contract(FarmABI.abi, address);
+  getContractFarm = (web3, address) => {
+    return new web3.eth.Contract(FarmABI.abi, address);
   };
 
   getCirculatingSupply = async () => {
@@ -116,7 +140,7 @@ export default class App extends Component {
     let burnPurgatoryBalance =
       (await this.gdaoContract.methods.balanceOf(BurnPurgatoryAddress).call()) /
       10 ** 18;
-    this.circulatingSupply = Number(
+    let circSupply = Number(
       (
         totalSupply -
         airdropUnclaimed -
@@ -125,27 +149,7 @@ export default class App extends Component {
         burnPurgatoryBalance
       ).toFixed(0)
     ).toLocaleString();
-  };
-
-  setChanged = async (changeType) => {
-    if (changeType === "DISCONNECTED") {
-      this.tokens.forEach((token) => {
-        token.depositable = null;
-        token.deposited = null;
-        token.rewards = null;
-      });
-      this.setState({ isConnected: false });
-    } else if (changeType === "CHANGED_ACCOUNT") {
-      const tasks = this.tokens.map(async (token) => {
-        await token.getDepositable(this.w3);
-        await token.getDeposited(this.w3, this.farmContract);
-        await token.getPendingGDAO(this.w3, this.farmContract);
-        await token.getApprovedAmount(this.w3, token.address, farmAddress);
-		console.log(token.approved);
-      });
-      await Promise.all(tasks);
-      this.setState({ isConnected: true });
-    }
+    this.setState({ circulatingSupply: circSupply });
   };
 
   render() {
@@ -160,14 +164,12 @@ export default class App extends Component {
           draggablePercent={25}
         />
         <Routes
-          w3={this.w3}
+          w3={this.web3}
           tokens={this.tokens}
           circulatingSupply={this.circulatingSupply}
           farmContract={this.farmContract}
-          isConnected={this.state.isConnected}
-          isSmall={this.state.isSmall}
-          isMedium={this.state.isMedium}
-          isLarge={this.state.isLarge}
+          walletconnect={this.walletconnect}
+          // isConnected={this.state.isConnected}
         />
       </>
     );
