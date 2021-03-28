@@ -114,7 +114,6 @@ export default class App extends Component {
         }
       });
       await Promise.all(tasks);
-      this.setState({});
     }
   };
 
@@ -199,6 +198,7 @@ export default class App extends Component {
           w3={this.web3}
           tokens={this.tokens}
           getTokenValues={this.getTokenValues}
+          getMineStats={this.getMineStats}
           circulatingSupply={this.circulatingSupply}
           farmContract={this.farmContract}
           walletconnect={this.walletconnect}

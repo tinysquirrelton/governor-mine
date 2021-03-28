@@ -25,6 +25,20 @@ export default class Pool extends Component {
     this.onResize();
   }
 
+  componentDidUpdate(prevProps) {
+    if (
+      this.props.token.price !== prevProps.token.price ||
+      this.props.token.apy !== prevProps.token.apy ||
+      this.props.token.tvl !== prevProps.token.tvl ||
+      this.props.token.depositable !== prevProps.token.depositable ||
+      this.props.token.deposited !== prevProps.token.deposited ||
+      this.props.token.rewards !== prevProps.token.rewards ||
+      this.props.token.approved !== prevProps.token.approved
+    ) {
+      this.setState({});
+    }
+  }
+
   componentWillUnmount() {
     window.removeEventListener("resize", this.onResize());
   }
