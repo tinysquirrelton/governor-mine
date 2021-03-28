@@ -199,7 +199,7 @@ export default class App extends Component {
           tokens={this.tokens}
           getTokenValues={this.getTokenValues}
           getMineStats={this.getMineStats}
-          circulatingSupply={this.circulatingSupply}
+          circulatingSupply={this.state.circulatingSupply}
           farmContract={this.farmContract}
           walletconnect={this.walletconnect}
         />
